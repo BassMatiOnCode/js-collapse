@@ -1,0 +1,29 @@
+/*
+ *		js-collapse-0.css		2023-09-15	usp
+ */
+
+	/* element-type specific rules */
+@import url( js-collapse-div-0.css ) ;
+@import url( js-collapse-ul-0.css ) ;
+@import url( js-collapse-ol-0.css ) ;
+@import url( js-collapse-dl-0.css ) ;
+
+dl.collapsible dt::before,
+ol.collapsible li::before,
+ul.collapsible li::before,
+[cbc]::before {
+	content : "\00A0"  ;  /* non-breaking space gives it a content */
+	display : inline-block ;
+	background-repeat : no-repeat ;
+	background-position : center center ;
+	}
+
+	/* assign icon images */
+[cbc="collapsed"]::before { background-image : url(orange-plus.svg) }
+[cbc="expanded"]::before { background-image : url(orange-minus.svg) }
+
+	/* hide the content when a block is collapsed */
+[cbc="collapsed"]+div {
+	height : 0px ;
+	overflow-y : hidden ;
+	}

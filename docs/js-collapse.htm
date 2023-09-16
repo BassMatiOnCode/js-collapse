@@ -1,0 +1,381 @@
+﻿<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="template-info" file-name="empty.htm" version="2022-12-01" editor="USP" />
+<meta name="author" content="USP" />
+<meta name="creation-date" content="2023-08-02" />
+<meta name="editor" content="USP" />
+<meta name="change-date" content="2023-08-02" />
+<meta name="version" content="1" />
+<meta name="categories" content="" />
+<meta name="tags" content="" />
+<meta name="description" content="JS-Collapse is a JavaScript module that supports collapsible HTML elements like trees, lists or chapters." />
+
+<link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
+<link rel="stylesheet" href="/inc/page.css" />
+<link rel="stylesheet" href="/site.css" />
+ 
+<title>Web Toolbox > JS-Collapse</title>
+
+</head><body><header id="page-header"><object data="title.svg" type="image/svg+xml"></object></header><div id="main-toolbar"></div><main id="page-content">
+
+<h1>Collapsible Structures</h1>
+
+<p id="page-abstract"></p>
+
+<p>A large document may be divided into chapters and subchapters and further down. HTML provides five headings (H1 to H5) for this purpose. To aid navigation in the document and provide the reader with some kind of overview, it might be useful to collapse chapter bodies, so that only the headings remain visible. The reader can then expand the desired chapters and drill down to the information of interest.</p>
+
+<p>Collapsible structures comprise of a <i>controller</i> element (H1...H6 in this example) and a collapsible <i>block</i> that contains the content to be hidden. The controller carries an icon that reflects the state of the block, either collapsed or expanded. Plus and minus or triangles are commonly used.</p>
+
+<p>Similarly, large definition lists (DL) might be collapsed to definition titles (DT), definition data (DD) can then be expanded upon request. The difference to collapsible chapters is that a single controller (DT) can have multible collapsible block (DD) elements.</p>
+
+<p>Similarly, unordered lists (UL) can be used to structurize large lists into manageable trees. Branches can be collapsed and expanded similar to document chapters as described above.</p>
+
+<p>Similarly, ordered lists (OL) can be structured to form a tree, for instance to form a structured instruction list. They are very similar to collapsible UL trees, but they must carry the item numbers in addition to the controller state icon. Therefore, spacing might be a little bit more complex.</p>
+
+<h2 cbc>Controller Icons</h2><div>
+
+<p>In this chapter we will explore the HTML and CSS structures to style collapsible elements, get the controller decorated with an icon, and get the spacing and indentation right.</p>
+
+<h3 cbc>Collapsible Chapters</h3><div>
+
+<p>We will start with collapsible chapters H1 to H5. The structures are simple, and we can study icon scaling in relation to the element font size.</p>
+
+<p>The listing below shows the HTML structure of a collapsible chapter:</p>
+
+<figcaption class="listing">HTML Structure of a collapsible chapter</figcaption>
+<pre>
+&lt;<hi>h2 cbc</hi>&gt;Caption&lt;/<hi>h2</hi>&gt;&lt;<hi>div</hi>&gt;
+	...
+&lt;/<hi>div</hi>&gt;
+</pre>
+
+<p>The element that carries the <tt>cbc</tt> attribute is the <i>collapsible block controller</i> (an <tt>H2</tt> in this case), the right element sibling is the collabsible block (a <tt>DIV</tt> in this case) and carries the chapter content.</p>
+
+<p>The controller icons (circled plus and minus) are loaded as background images into the <tt>::before</tt> pseudo element of the block controller with the help of some CSS rules:</p>
+
+<figcaption class="listing">Common background image configuration</figcaption>
+<pre>
+[cbc]::<hi>before</hi> {
+	content : "\00A0"  ; 
+	display : inline-block ;
+	margin-right: 10px;
+	background-repeat : no-repeat ;
+	background-position : center center ;
+	}
+</pre>
+
+<p>To give the icon container a size, its content must be non-whitespace. Otherwise the element will not be rendered to the screen. A non-breaking space (Unicode 0xA0), combined with setting <tt>display</tt> to <tt>inline-block</tt> does the trick.</p>
+
+<p>A little right margin brings some space between icon and text. The other rule attributes prevent tiling and determine vertical and horizontal position. Additional attributes deal with background image position and size. The actual image url is then defined with more specific selectors (<tt>cbc</tt> value set to <tt>collapsed</tt> or <tt>expanded</tt>):</p>
+
+<figcaption class="listing">Background image assignment</figcaption>
+<pre>
+ [cbc="<hi>collapsed</hi>"]::before {
+	background-image : url(<hi>orange-plus.svg</hi>);
+	}
+
+[cbc="<hi>expanded</hi>"]::before {
+	background-image : url(<hi>orange-minus.svg</hi>);
+	}
+</pre>
+
+<h4 cbc>Scaling the Icon With Font Size</h4><div>
+
+<p>It would be nice to scale the controller icon size in relation to the controller font size. For instance, a large H1 heading should have a larger icon than an H3 heading. Let's see what we can do:</p>
+
+<figcaption class="listing">Scaling the image size</figcaption>
+<pre>
+[cbc]::<hi>before</hi> {
+	width : 1em ;
+	background-size : 100% ;
+	}
+</pre>
+
+<p>This combination scales the image container <tt>width</tt> with the font size, and the background image size scale with the container width. The percentage may have to be tweaked a little bit up or down.</p>
+
+<p>You can check the behaviour with the example <a href="collapse-div-01.htm">collapse-div-01.htm</a>. Open the F12 developer tools, activate the elements tab, and select the H2 element in the DOM tree. Then select the font-size value in the styles panel and press the up and down arrow keys on the keyboard to change the heading element font size.</p>
+
+<video controls width="400" height="100">
+<source src="img/vid-001.mp4" type="video/mp4" />
+</video>
+
+<!--h4--></div>
+
+<h4 cbc>Limiting the Controller Icon Size</h4><div>
+
+<p>With large fonts, the icon can grow too large, and with smaller fonts, the icon can shrink too much. To impose a limit, we can set the background size to <tt>contain</tt> instead:</p>
+
+<figcaption class="listing">Scaling the image size</figcaption>
+<pre>
+[cbc]::<hi>before</hi> {
+	width : 1em ;
+	background-size : contain ;
+	}
+</pre>
+
+<p>The keyword <tt>contain</tt> causes the image to be scaled down, if necessary, to fit into the <tt>::before</tt> box. But the image is <i>not scaled up</i> beyond its intrinsic size if the container grows larger.</p>
+
+<p>Note that the maximum icon size is now determined by the intrinsice image size, so you may have to tweak the SVG image source a little bit.</p>
+
+<video controls width="400" height="100">
+<source src="img/vid-002.mp4" type="video/mp4" />
+</video>
+
+<p>This combination works quite well, but the image may still get <em>too small</em> with smaller font sizes. As we have seen, a percentage value for the <tt>background-size</tt> scales the background image with the background image container width.</p>
+
+<p>The next idea is to set upper and lower limits for the container width:</p>
+
+<figcaption class="listing">Limiting the image container size</figcaption>
+<pre>
+[cbc]::<hi>before</hi> {
+	width : 1em ;
+	<hi>max-width</hi> : 30px;
+	<hi>min-width</hi> : 15px;
+	<hi>min-height</hi> : 15px;
+	background-size : 100% ;
+	}
+</pre>
+
+<p>We should also set <tt>min-height</tt> to the same value as the <tt>min-width</tt>, otherwise the image could be clipped at the vertical borders.</p>
+
+<video controls width="400" height="100">
+<source src="img/vid-003.mp4" type="video/mp4" />
+</video>
+
+<p>Depending on the values, the results might not be entirely consistent. In this example I set <tt>max-width=35px</tt>, and at certain font sizes the icon size makes a "jump" as demonstrated in the following video:</p>
+
+<video controls width="400" height="100">
+<source src="img/vid-004.mp4" type="video/mp4" />
+</video>
+
+<!--h4--></div>
+
+<h4 cbc>Specific Sizes Depending on the Controller Element Type</h4><div>
+
+<p>Note: The CSS code has been splitted into common rules for all collapsible elements, which can be found in <a href="/inc/js-collapse/js-collapse-0.css">js-collapse-0.css</a>, and rules specifically for collapsible chapters in <a href="/inc/js-collapse/js-collapse-div-0.css">js-collapse-div-0.css</a>.</p>
+
+<p>Depending on the controller element type, the icon size may have to be set manually to give a nice and elegant appearance:</p>
+
+<figcaption class="listing">Background image size tweaks</figcaption>
+<pre>
+<hi>h1</hi>[cbc]::before { background-size : <hi>27px</hi> ; }
+<hi>h2</hi>[cbc]::before { background-size : <hi>22px</hi> ; }
+<hi>h3</hi>[cbc]::before { background-size : <hi>18px</hi> ; }
+<hi>h4</hi>[cbc]::before { background-size : <hi>15px</hi> ; }
+<hi>h5</hi>[cbc]::before { background-size : <hi>15px</hi> ; }
+</pre>
+
+<p>With this approach, we can omit the max and min size properties and always get a constistence and visually appealing icon size.</p>
+
+<p>This also allows us to further simplify the common CSS code, and make all <tt>::before</tt> elements, the icon containers, equally wide:</p>
+
+<figcaption class="listing">Heading ic container configuration</figcaption>
+<pre>
+ h1[cbc]::before, 
+ h2[cbc]::before, 
+ h3[cbc]::before, 
+ h4[cbc]::before, 
+ h5[cbc]::before {
+	<hi>width</hi> : 27px ;
+	margin-right: 10px ;
+	}
+</pre>
+
+<p>Note that the element-agnostic rules in <a href="/inc/js-collapse/js-collapse-0.css">js-collapse-0.css</a> are still in effect:</p>
+
+<figcaption class="listing">Comon icon container configuration</figcaption>
+<pre>
+ [cbc]::before {
+	content : "\00A0"  ;
+	display : inline-block ;
+	background-repeat : no-repeat ;
+	background-position : center center ;
+	}
+</pre>
+
+<p>As a result, the controller icons are vertically aligned. Also the left border of the heading texts. This is especially important for <em>collapsible chapters</em>, because, although they can be logically nested inside each other according to the heading level, they should <em>not</em> appear visually indented, more like <em>drawers</em>.</p>
+
+<p><a href="collapse-div-02.htm">collapse-div-02.htm</a> demonstrates this.</p>
+
+<p>The following rule moves the headings slightly to the left, so that the controller icons stick out better from the text content:</p>
+
+<figcaption class="listing">Icon container configuration</figcaption>
+<pre>
+h1[cbc], h2[cbc], h3[cbc], h4[cbc], h5[cbc] {
+	margin-left : -15px ;
+</pre>
+
+<!--h4--></div>
+
+<h4 cbc>Tree Structures with Unordered List Elements</h4><div>
+
+<p>The HTML structure of a collapsible tree looks like this:</p>
+
+<figcaption class="listing">A collapsible tree</figcaption>
+<pre>
+&lt;ul class="collapsible"&gt;
+&lt;Non-collapsible item&gt;
+&lt;/ul&gt;
+</pre>
+
+<p>Again, the common CSS rules are defined in <a href="/inc/js-collapse/js-collapse-0.css">js-collapse-0.css</a>, the more specific rules for collapsible UL elements are defined in <a href="/inc/js-collapse/js-collapse-ul-0.css">js-collapse-ul-0.css</a>.</p>
+
+<p>First we must configure the indentation for collapsible trees:</p>
+
+<figcaption class="listing">A collapsible tree</figcaption>
+<pre>
+ ul.collapsible {
+	padding-left : 0px ;
+	line-height : 160% ;
+	}
+
+ul.collapsible ul {
+	padding-left : 15px;	/*  */
+	}
+
+ ul.collapsible li {
+	list-style-type : none ;
+	}
+</pre>
+
+<p>Root level should not be idented, levels below root must be indented slightly. And list items don't have markers, the collapsible block controller icons are used instead.</p>
+
+<p>All list elements must  have the same spacing properties, including non-collapsible elements:</p>
+
+<figcaption class="listing">Item spacing</figcaption>
+<pre>
+ul.collapsible li::before {
+	width : 0.9em ;
+	margin-right: 10px ;
+	background-size : 100% ;
+	}
+</pre>
+
+<p>Nested collapsed lists must be hidden:</p>
+
+<figcaption class="listing">Hiding collapsed elements</figcaption>
+<pre>
+li[cbc="collapsed"] > ul {
+	height : 0px ;
+	overflow-y : hidden ;
+	}
+</pre>
+
+<p>An example is shown in <a href="collapse-ul-01.htm">collapse-ul-01.htm</a>.</p>
+
+<!--h4--></div>
+
+<h4 cbc>Collapsible Ordered Lists</h4><div>
+
+<p>OL-specific spacings are defined in <a href="/inc/js-collapse-ol-0.css">js-collapse-ol-0.css</a>.</p>
+
+<p>In an collapsible ordered list (OL), a list item has <em>two</em> pseudo-elements in front of the text:</p>
+
+<ol>
+<li>The <tt>::marker</tt>, which carries the item number, and</li>
+<li>the <tt>::before</tt>, which carries the controller icon.</li>
+</ol>
+
+<p>The first problem to be solved: The controller icon sits between the marker and the item text &ndash; which looks quite ugly. So the <tt>::before</tt> must go to the left, or the <tt>::marker</tt> must go to the right. The latter doesn't work so we will tweak the position of the <tt>::before</tt> element.</p>
+
+<p>We aply a negative left margin, his move the element by 40 pixels to the left. The icon text moves also, so we must push it back with more space between them, achieved with an increased right margin:</p>
+
+<figcaption class="listing">CSS for ordered list trees</figcaption>
+<pre>
+ol.collapsible li::before {
+	<hi>margin-left</hi> : -40px ;
+	width : 0.9em ;
+	<hi>margin-right</hi>: 30px ;
+	background-size : 100% ;
+</pre>
+
+<p>This take more space on the left side. To compensate, we add an appropriate left margin to the tree root element:</p>
+
+<figcaption class="listing">Increased front space compensation</figcaption>
+<pre>
+ol.collapsible {
+	padding-left : 0px ;
+	line-height : 160% ;
+	<hi>margin-left</hi> : 40px ;
+	}
+</pre>
+
+<p>The rest is already known from the CSS for collapsible ULs:</p>
+
+<figcaption class="listing">Additional rules</figcaption>
+<pre>
+ol.collapsible ol { padding-left : 15px }
+ol.collapsible li { list-style-type : decimal }
+li[cbc="collapsed"] &gt; ol {
+	height : 0px ;
+	overflow-y : hidden ;
+	}
+</pre>
+
+<p><a href="collapse-ol-01.htm">collapse-ol-01.htm</a> has an example</p>
+
+<!--h4--></div>
+
+<h4 cbc>Collapsible Description Lists</h4><div>
+
+<p>The structure of a DL looks like this:</p>
+
+<figcaption class="listing">HTML structure of a definition list</figcaption>
+<pre>
+&lt;dl&gt;
+&lt;dt&gt;Title&lt;/dt&gt;
+&lt;dd&gt;Definition&lt;/dd&gt;
+
+&lt;dt&gt;Title&lt;/dt&gt;
+&lt;dt&gt;Title&lt;/dt&gt;
+&lt;dd&gt;Definition&lt;/dd&gt;
+
+&lt;dt&gt;Title&lt;/dt&gt;
+&lt;dd&gt;Definition&lt;/dd&gt;
+&lt;dd&gt;Definition&lt;/dd&gt;
+</pre>
+
+<p>As you can see, we can have multiple titles for a single definition, and multiple definition elements for a single title.</p>
+
+<p>Let's start with the CSS properties:</p>
+
+<figcaption class="listing">CSS rules for definition lists</figcaption>
+<pre>
+dl.collapsible dt::before {
+	width : 0.9em ;
+	margin-right: 10px ;
+	background-size : 100% ;
+	}
+dl.collapsible dt[cbc="collapsed"]+dd {
+	height : 0px ;
+	overflow-y : hidden ;
+	}
+dl.collapsible dd {
+	margin-left : 15px ;
+	}
+</pre>
+
+<p>An example can be inspected at <a href="collapse-dl-01.htm">collapse-dl-01.htm</a>.</p>
+
+<p>Unfortunately, a single block controller DT cannot collapse multiple adjacent DD elements. I tried 
+
+<pre>
+dl.collapsible dd[height="0px"]+dd {
+	height : 0px ;
+	overflow-y : hidden ;
+	}
+</pre>
+
+<p>This should collapse a DD element if the preceding DD element is already collapsed. But unfortunately, this only works with CSS attributes set directly on the element, but not for property values "inherited" from a another CSS rule. So we must leave this problem for a solution with script support.</p>
+
+<!--h4--></div>
+
+<!--h3--controller icons--></div>
+
+<!--h2--></div>
+
+
+
+</main><footer id="page-footer"></footer><script type="module" src="/inc/page.js" ></script></body></html>

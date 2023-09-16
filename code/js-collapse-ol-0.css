@@ -1,0 +1,31 @@
+/*
+ *		js-collapse-unordered-list-0.css
+ */
+
+ol.collapsible {
+	padding-left : 0px ;	/* Root level should not be idented */
+	line-height : 160% ;
+	margin-left : 40px ;
+	}
+
+ol.collapsible ol {
+	padding-left : 15px;	/* Levels below root must be indented */
+	}
+
+ol.collapsible li {
+	list-style-type : decimal ;
+	}
+
+	/* All list elements must  have the same spacing properties, including non-collapsible elements */
+ol.collapsible li::before {
+	margin-left : -40px ;
+	width : 0.9em ;
+	margin-right: 30px ;
+	background-size : 100% ;
+	}
+
+	/* Nested collapsed lists must be hidden */
+li[cbc="collapsed"] > ol {
+	height : 0px ;
+	overflow-y : hidden ;
+	}

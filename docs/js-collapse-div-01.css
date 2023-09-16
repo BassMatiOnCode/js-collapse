@@ -1,0 +1,41 @@
+/*
+ *		js-collapse-0.css		2023-09-15	usp
+ */
+
+ [cbc]::before {
+	content : "\00A0"  ;  /* non-breaking space gives it a content */
+	display : inline-block ;
+	width : 1em ;
+	max-width : 30px ;
+	min-width : 18px ;
+	min-height : 18px ;
+	margin-right: 10px ;
+	background-repeat : no-repeat ;
+	background-position : center center ;
+	background-size : 100% ;
+	xbackground-size : contain ;
+	}
+
+	/* limit icon size for large headings */
+xh1[cbc]::before { background-size : 25px ; }
+xh2[cbc]::before { background-size : 23px ; }
+	
+	/* let heading icons stick a little bit out to the left */
+h1[cbc], h2[cbc], h3[cbc], h4[cbc], h5[cbc] {
+	margin-left : -15px ;
+	}
+
+h1 { font-size : 30pt }
+h2 { font-size : 30pt }
+h3 { font-size : 30pt }
+h4 { font-size : 30pt }
+
+	/* assign icon images */
+[cbc="collapsed"]::before { background-image : url(/inc/js-collapse/orange-plus.svg) }
+[cbc="expanded"]::before { background-image : url((/inc/js-collapse/orange-minus.svg) }
+
+[cbc="collapsed"]+div {
+	height : 0px ;
+	overflow-y : hidden ;
+	}
+

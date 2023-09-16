@@ -1,0 +1,22 @@
+/*
+ *		js-collapse-dl-0.css
+ */
+
+dl.collapsible dt::before {
+	width : 0.9em ;
+	margin-right: 10px ;
+	background-size : 100% ;
+	}
+
+dl.collapsible dt[cbc="collapsed"]+dd {
+	height : 0px ;
+	overflow-y : hidden ;
+	}
+
+dl.collapsible dd[height="0px"]+dd {
+	height : 0px ;
+	overflow-y : hidden ;
+	}
+dl.collapsible dd {
+	margin-left : 15px ;
+	}
