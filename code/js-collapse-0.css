@@ -15,7 +15,6 @@ ul.collapsible li::before,
 	content : "\00A0"  ;  /* non-breaking space gives it a content */
 	display : inline-block ;
 	background-repeat : no-repeat ;
-	background-position : center center ;
 	}
 
 	/* assign icon images */

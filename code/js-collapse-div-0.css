@@ -10,6 +10,7 @@ h4[cbc]::before,
 h5[cbc]::before {
 	width : 27px ;
 	margin-right: 10px ;
+	background-position : center center ;
 	}
 
 	/* define icon size for each heading level */
@@ -23,4 +24,38 @@ h5[cbc]::before { background-size : 15px ; }
 h1[cbc], h2[cbc], h3[cbc], h4[cbc], h5[cbc] {
 	margin-left : -15px ;
 	}
+
+	/* changes of vertical space depending on state */
+h1[cbc]+div+h1[cbc="collapsed"], 
+h2[cbc]+div+h2[cbc="collapsed"], 
+h3[cbc]+div+h3[cbc="collapsed"], 
+h4[cbc]+div+h4[cbc="collapsed"], 
+h5[cbc]+div+h5[cbc="collapsed"] {
+	margin-top : 5px ;
+	}
+
+h1[cbc="collapsed"], 
+h2[cbc="collapsed"], 
+h3[cbc="collapsed"], 
+h4[cbc="collapsed"], 
+h5[cbc="collapsed"] {
+	margin-bottom : 5px ;
+	}
+
+h1[cbc]+div+h1[cbc="expanded"], 
+h2[cbc]+div+h2[cbc="expanded"], 
+h3[cbc]+div+h3[cbc="expanded"], 
+h4[cbc]+div+h4[cbc="expanded"], 
+h5[cbc]+div+h5[cbc="expanded"] {
+	margin-top : 30px ;
+	}
+
+h1[cbc="expanded"]+div, 
+h2[cbc="expanded"]+div, 
+h3[cbc="expanded"]+div, 
+h4[cbc="expanded"]+div, 
+h5[cbc="expanded"]+div {
+	margin-bottom : 30px ;
+	}
+
 

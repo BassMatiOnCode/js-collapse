@@ -21,6 +21,7 @@ ol.collapsible li::before {
 	margin-left : -40px ;
 	width : 0.9em ;
 	margin-right: 30px ;
+	background-position : center center ;
 	background-size : 100% ;
 	}
 

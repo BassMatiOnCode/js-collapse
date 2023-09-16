@@ -19,6 +19,7 @@ ul.collapsible li {
 ul.collapsible li::before {
 	width : 0.9em ;
 	margin-right: 10px ;
+	background-position : center center ;
 	background-size : 100% ;
 	}
 

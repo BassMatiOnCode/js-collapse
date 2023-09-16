@@ -34,7 +34,7 @@
 
 <p>Similarly, ordered lists (OL) can be structured to form a tree, for instance to form a structured instruction list. They are very similar to collapsible UL trees, but they must carry the item numbers in addition to the controller state icon. Therefore, spacing might be a little bit more complex.</p>
 
-<h2 cbc>Controller Icons</h2><div>
+<h2 cbc>CSS and Controller Icons</h2><div>
 
 <p>In this chapter we will explore the HTML and CSS structures to style collapsible elements, get the controller decorated with an icon, and get the spacing and indentation right.</p>
 
@@ -62,13 +62,12 @@
 	display : inline-block ;
 	margin-right: 10px;
 	background-repeat : no-repeat ;
-	background-position : center center ;
 	}
 </pre>
 
 <p>To give the icon container a size, its content must be non-whitespace. Otherwise the element will not be rendered to the screen. A non-breaking space (Unicode 0xA0), combined with setting <tt>display</tt> to <tt>inline-block</tt> does the trick.</p>
 
-<p>A little right margin brings some space between icon and text. The other rule attributes prevent tiling and determine vertical and horizontal position. Additional attributes deal with background image position and size. The actual image url is then defined with more specific selectors (<tt>cbc</tt> value set to <tt>collapsed</tt> or <tt>expanded</tt>):</p>
+<p>A little right margin brings some space between icon and text. The other rule attributes prevent tiling and determine vertical and horizontal position. The actual image url is then defined with more specific selectors (<tt>cbc</tt> value set to <tt>collapsed</tt> or <tt>expanded</tt>):</p>
 
 <figcaption class="listing">Background image assignment</figcaption>
 <pre>
@@ -89,6 +88,7 @@
 <pre>
 [cbc]::<hi>before</hi> {
 	width : 1em ;
+	background-position : center center ;
 	background-size : 100% ;
 	}
 </pre>
@@ -111,6 +111,7 @@
 <pre>
 [cbc]::<hi>before</hi> {
 	width : 1em ;
+	background-position : center center ;
 	background-size : contain ;
 	}
 </pre>
@@ -134,6 +135,7 @@
 	<hi>max-width</hi> : 30px;
 	<hi>min-width</hi> : 15px;
 	<hi>min-height</hi> : 15px;
+	background-position : center center ;
 	background-size : 100% ;
 	}
 </pre>
@@ -180,6 +182,7 @@
  h5[cbc]::before {
 	<hi>width</hi> : 27px ;
 	margin-right: 10px ;
+	background-position : center center ;
 	}
 </pre>
 
@@ -191,7 +194,6 @@
 	content : "\00A0"  ;
 	display : inline-block ;
 	background-repeat : no-repeat ;
-	background-position : center center ;
 	}
 </pre>
 
@@ -209,7 +211,9 @@ h1[cbc], h2[cbc], h3[cbc], h4[cbc], h5[cbc] {
 
 <!--h4--></div>
 
-<h4 cbc>Tree Structures with Unordered List Elements</h4><div>
+<!--h3--></div>
+
+<h3 cbc>Tree Structures with Unordered List Elements</h3><div>
 
 <p>The HTML structure of a collapsible tree looks like this:</p>
 
@@ -265,9 +269,9 @@ li[cbc="collapsed"] > ul {
 
 <p>An example is shown in <a href="collapse-ul-01.htm">collapse-ul-01.htm</a>.</p>
 
-<!--h4--></div>
+<!--h3--></div>
 
-<h4 cbc>Collapsible Ordered Lists</h4><div>
+<h3 cbc>Collapsible Ordered Lists</h3><div>
 
 <p>OL-specific spacings are defined in <a href="/inc/js-collapse-ol-0.css">js-collapse-ol-0.css</a>.</p>
 
@@ -316,9 +320,9 @@ li[cbc="collapsed"] &gt; ol {
 
 <p><a href="collapse-ol-01.htm">collapse-ol-01.htm</a> has an example</p>
 
-<!--h4--></div>
+<!--h3--></div>
 
-<h4 cbc>Collapsible Description Lists</h4><div>
+<h3 cbc>Collapsible Description Lists</h3><div>
 
 <p>The structure of a DL looks like this:</p>
 
@@ -339,27 +343,49 @@ li[cbc="collapsed"] &gt; ol {
 
 <p>As you can see, we can have multiple titles for a single definition, and multiple definition elements for a single title.</p>
 
-<p>Let's start with the CSS properties:</p>
+<p>Let's start with the CSS properties.</p>
 
 <figcaption class="listing">CSS rules for definition lists</figcaption>
 <pre>
-dl.collapsible dt::before {
-	width : 0.9em ;
-	margin-right: 10px ;
-	background-size : 100% ;
+dl.collapsible dt {
+	margin-left : 1.5em ;
 	}
+dl.collapsible dt::before {
+	width : 1.5em ;
+	margin-left : -1.5em ;
+	background-size : 60% ;
+	}
+</pre>
+
+<p>The design is based on a left margin of 1.5 em, applied on all DT elements in the list, to make room for the block controller icons. The <tt>::before</tt> icon container is moved to the left by the same amount, and its width is also 1.5 em. An appropriate icon size seems to be 60 percent of the container width.</p>
+
+<figcaption class="listing">Rules for definition data</figcaption>
+<pre>
+dl.collapsible dd {
+	margin-left : 30px ;
+	}
+</pre>
+
+<p>The <tt>DD</tt> elements are indented by an arbitrary amount, 10 and 40 pixels seem to be viable values.</p>
+
+<p>The following rules should control the visibility of DD elements, but the second one does not work:</p>
+
+<figcaption class="listing">Controlling visibility</figcaption>
+<pre>
 dl.collapsible dt[cbc="collapsed"]+dd {
 	height : 0px ;
 	overflow-y : hidden ;
 	}
-dl.collapsible dd {
-	margin-left : 15px ;
+dl.collapsible dd[height="0px"]+dd {
+	<cc>/* does not work */</cc>
+	height : 0px ;
+	overflow-y : hidden ;
 	}
 </pre>
 
 <p>An example can be inspected at <a href="collapse-dl-01.htm">collapse-dl-01.htm</a>.</p>
 
-<p>Unfortunately, a single block controller DT cannot collapse multiple adjacent DD elements. I tried 
+<p>Unfortunately, there are some problems with DLs. Firstly, a single block controller DT cannot collapse multiple adjacent DD elements. I tried 
 
 <pre>
 dl.collapsible dd[height="0px"]+dd {
@@ -368,14 +394,91 @@ dl.collapsible dd[height="0px"]+dd {
 	}
 </pre>
 
-<p>This should collapse a DD element if the preceding DD element is already collapsed. But unfortunately, this only works with CSS attributes set directly on the element, but not for property values "inherited" from a another CSS rule. So we must leave this problem for a solution with script support.</p>
+<p>This should collapse a DD element if the preceding DD element is already collapsed and has a height of zero pixels. But unfortunately, this only works with CSS attributes set directly on the element, but not for property values "inherited" from a another CSS rule. So we must leave this problem for a solution with script support.</p>
 
-<!--h4--></div>
+<p>Secondly, a definition or a sequence of definitions DD associated with multiple titles DT poses a similar problem. If we place the cbc attribute on the DT that precedes the DD(s), the controller can expand the following DD. But with variable vertical spacing (described further down) we cannot change the top margin of the first DT in that group.</p>
 
-<!--h3--controller icons--></div>
+<p>So at this point in time, it is recommended to use multiple DTs and DDs within a logical group.</p>
+
+<!--h3--></div>
 
 <!--h2--></div>
 
+<h2 cbc>Vertical Space Changes</h2><div>
+
+<p>Some lists change spacing between elements when a block controller changes its state. For example, a sequence collapsed chapters of the same level, e. g. some H2 chapters, are visually <em>condensed</em>: The vertical distance between the H2 elements is rather small, so that these collapsed chapters appear like a <em>list</em>. That allows the reader to get a better overview with more information on the screen.</p>
+
+<p>If a chapter in the middle is then expanded, the distance to the headings above and below should grow significantly in order to emphasize that the chapter is now expanded. 
+
+<h3 cbc>Collapsible Chapters</h3><div>
+
+<figcaption class="listing">Shrink the space above a collapsed heading</figcaption>
+<pre>
+h1[cbc]+div+h1[cbc="collapsed"], 
+h2[cbc]+div+h2[cbc="collapsed"], 
+h3[cbc]+div+h3[cbc="collapsed"], 
+h4[cbc]+div+h4[cbc="collapsed"], 
+h5[cbc]+div+h5[cbc="collapsed"] {
+	margin-top : 5px ;
+	}
+</pre>
+
+<figcaption class="listing">Shrink the space below a collapsed heading</figcaption>
+<pre>
+h1[cbc="collapsed"], 
+h2[cbc="collapsed"], 
+h3[cbc="collapsed"], 
+h4[cbc="collapsed"], 
+h5[cbc="collapsed"] {
+	margin-bottom : 5px ;
+	}
+</pre>
+
+<figcaption class="listing">Grow the space above an expanded heading</figcaption>
+<pre>
+h1[cbc]+div+h1[cbc="expanded"], 
+h2[cbc]+div+h2[cbc="expanded"], 
+h3[cbc]+div+h3[cbc="expanded"], 
+h4[cbc]+div+h4[cbc="expanded"], 
+h5[cbc]+div+h5[cbc="expanded"] {
+	margin-top : 30px ;
+	}
+</pre>
+
+<figcaption class="listing">Grow the space below an expanded content block</figcaption>
+<pre>
+h1[cbc="expanded"]+div, 
+h2[cbc="expanded"]+div, 
+h3[cbc="expanded"]+div, 
+h4[cbc="expanded"]+div, 
+h5[cbc="expanded"]+div {
+	margin-bottom : 30px ;
+	}
+</pre>
+
+<!--h3--></div>
+
+<h3 cbc>Collapsible Definition Lists</h3><div>
+
+<p>The same idea applies to collapsible definition lists:</p>
+
+<figcaption class="listing">Style rules for variable vertical spacing</figcaption>
+<pre>
+dl.collapsible dt[cbc="expanded"]:not(:first-child) {
+	margin-top : 20px ;
+	}
+dl.collapsible dt[cbc="expanded"] {
+	margin-bottom : 20px ;
+	}
+</pre>
+
+<p>But here again we run into problems with multiple titles for a description data element. The last DT in a sequence of DTs has the <tt>cbc</tt> attribute, but there is no selector or selector function to query that.</p>
+
+<p>A work-around for multiple titles put all title string in the same DT, and separate them with <tt>BR</tt>s.</p>
+
+<!--h3--></div>
+
+<!--h2--></div>
 
 
 </main><footer id="page-footer"></footer><script type="module" src="/inc/page.js" ></script></body></html>
