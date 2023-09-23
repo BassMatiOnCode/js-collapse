@@ -1,0 +1,55 @@
+/*
+ *		js-collapse-dl-0.css
+ */
+
+dl.collapsible dt {
+	margin-top : 10px ;
+	margin-bottom : 5px ;
+	margin-left : 1.5em ;
+	}
+dt[cbc]::before {
+	width : 1.5em ;
+	margin-left : -1.5em ;
+	background-position : left center ;
+	background-size : 60% ;
+	}
+[cbc] + dd {
+	margin-left : 10px ;
+	border-top : 1px solid transparent;
+	border-bottom : 1px solid transparent;
+	}
+dl.collapsible [cbc]+dd {
+	transition : height linear 1s ;
+	}
+dl.collapsible dt[cbc="expanded"]+dd {
+	height : auto ;
+	}
+dl.collapsible dt[cbc="collapsing"]+dd {
+	height : 0px ;
+	overflow : hidden ;
+	}
+dl.collapsible dt[cbc="collapsed"]+dd {
+	height : 0px ;
+	overflow: hidden ;
+	}
+dl.collapsible dt[cbc="expanding"]+dd {
+	height : auto ;
+	overflow : hidden ;
+	}
+
+	/* dynamic vertical spacing */
+[cbc]:has(+dd) { 
+	transition : margin-top,margin-bottom linear,linear  1s,1s;
+	}
+[cbc="collapsed"]:has(+dd+[cbc="collapsing"]) ,
+[cbc="collapsing"]:has(+dd+[cbc="collapsed"]) ,
+[cbc="collapsed"]:has(+dd+[cbc="collapsed"]) {
+	margin-bottom : 0px ;
+	}
+[cbc="collapsed"]+dd+[cbc="collapsing"] ,
+[cbc="collapsing"]+dd+[cbc="collapsed"] ,
+[cbc="collapsed"]+dd+[cbc="collapsed"] {
+	margin-top : 0px ;
+	}
+
+

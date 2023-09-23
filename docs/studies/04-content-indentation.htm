@@ -1,0 +1,162 @@
+﻿<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { 
+	margin-left : 40px 
+	}
+[cbc]::before {
+	content : "\00A0"  ;  /* non-breaking space gives it a content */
+	display : inline-block ;
+	background-repeat : no-repeat ;
+	width : 30px ;
+	margin-right: 10px ;
+	background-position : center center ;
+	}
+h1[cbc]::before {	background-size : 27px }
+h2[cbc]::before {	background-size : 25px }
+h3[cbc]::before {	background-size : 22px }
+h4[cbc]::before {	background-size : 20px ; line-height : 20px }
+h5[cbc]::before {	background-size : 18px ; line-height : 18px 
+	}
+[cbc="collapsing"]::before ,
+[cbc="collapsed"]::before {
+	background-image : url( /inc/js-collapse/orange-plus.svg );
+	}
+[cbc="expanding"]::before ,
+[cbc="expanded"]::before {
+	background-image : url( /inc/js-collapse/orange-minus.svg );
+	}
+[cbc="expanded"] + div {
+	height : auto ;
+	}
+[cbc="collapsing"] + div {
+	height : 0px ;
+	overflow : hidden ;
+	}
+[cbc="collapsed"] + div {
+	height : 0px ;
+	overflow : hidden ;
+	}
+[cbc="expanding"] + div {
+	height : auto ;
+	overflow : hidden ;
+	}
+[cbc]:has(+div) {
+	margin-left : -20px ;
+	}
+[cbc] + div {
+	margin-left : -20px ;
+	padding-left : 20px ;
+	transition : height linear 1s;
+		/* WORKAROUND: div content jumps up and down during transition without borders. */
+	border-top  : 1px solid transparent;
+	border-bottom  : 1px solid transparent;
+	}
+</style>
+<title>Web Toolbox > JS-Collapse > Collapsible Chapters</title>
+
+</head><body>
+
+<h1>Vertical Spacing</h1>
+
+<p>Instructions:</p>
+<p>Click on the controller icons (+|-) to expand or collapse the associated content container.</p>
+
+<p>Other content</p>
+<h1 cbc id="h1">Heading 1</h1><div><p>content</p></div>
+<h1 cbc id="h2">Heading 2</h1><div>
+	<p>content</p>
+	<h2 cbc id="h2-1">Heading 2-1</h2><div><p>content</p></div>
+	<p>content</p>
+	</div>
+<h1 cbc id="h3">Heading 3</h1><div><p>content</p></div>
+<h1 cbc id="h4">Heading 4</h1><div><p>content</p></div>
+<h1 cbc id="h5">Heading 5</h1><div><p>content</p></div>
+<p>Other content</p>
+
+<h2>Notes</h2><div>
+
+<p>1. If two adjacent chapters are both collapsed, their content containers are collapsed to zero height, and the space between their controller elements (headings H1...H5) is zero.</p>
+<p>This means that the <tt>margin-bottom</tt> of the upper heading element and the <tt>margin-top</tt> of the lower heading are both <tt>0px</tt>.</p>
+<p>2. To avoid confusion, two adjacent chapters must be of the same level. For example, an H2 chapter can only be followed by an H2 chapter.</p>
+<p>That means that chapters of a lower level should always be nested in the content container of the upper chapter.</p>
+<p>3. A nested chapter must be exactly 1 level below its parent chapter.</p>
+<p>For example, an H3 chapter must be nested in an H2 content container.</p>
+
+<h2>Findings</h2>
+
+<p>1. The container <em>must</em> have a border-top and a border-bottom, otherwise the content jumps up/down near height=0px. The border can be 1px solid transparent. The cause might be that the content (e.g. a <tt>p</tt>) has top and bottom margins, which "disappear" if the container height is switched from <tt>auto</tt> to a numeric value.</p> 
+
+<p>It seems that the p top and the h1 bottom margins don't collapse during transition.</p>
+
+</div>
+
+<script type="module">
+const controllers = document.querySelectorAll( "[cbc]" );
+for ( const controller of controllers ) {
+	controller.setAttribute( "cbc", "expanded" );
+	const block = controller.nextElementSibling ;
+	block.addEventListener( "transitionend", function ( evt ) {
+		//	Note: "this" points to the controller
+		console.log( "transition end " + evt.target.style.height );
+		switch ( this.getAttribute( "cbc" )) {
+		case "expanding" :
+			// container is now expanded
+			console.log( "Container expanded" );
+			this.setAttribute( "cbc", "expanded" );
+			evt.target.style.removeProperty( "height" );
+			break;
+		case "collapsing" :
+			console.log( "Container collapsed" );
+			this.setAttribute( "cbc", "collapsed" );
+			break;
+			}
+		evt.preventDefault( );
+		evt.stopPropagation( );
+		}.bind( controller ) ) ;    // make sure that "this" points to the controller
+	controller.addEventListener( "click", evt => {
+		switch ( evt.target.getAttribute( "cbc" )) {
+		case "expanded" :
+			collapse( evt.target );
+			break;
+		case "collapsed" :
+			expand( evt.target );
+			break;
+			}
+		evt.preventDefault( );
+		evt.stopPropagation( );
+		} ) ;
+	}
+function collapse ( controller ) { 
+	const block = controller.nextElementSibling ;
+	// overwrite auto with a numeric value
+	block.style.height = window.getComputedStyle( block ).height ;
+	window.requestAnimationFrame( ( ) => {
+	window.requestAnimationFrame( ( ) => {
+		// Set controller state and start collapsing 
+		console.log( "Collapsing from " + block.style.height );
+		controller.setAttribute( "cbc", "collapsing" );
+		block.style.removeProperty( "height" );
+		} ) ;
+		} ) ;
+	} ;
+ function expand ( controller ) {
+	const block = controller.nextElementSibling ;
+	// Get the fully expanded height
+	controller.setAttribute( "cbc", "expanding" );
+	const height = window.getComputedStyle( block ).height ;
+	// Override stylesheet definition (height:auto)
+	block.style.height = "0px" ;
+	window.requestAnimationFrame( ( ) => {
+	window.requestAnimationFrame( ( ) => {
+		// start transition by chaning the inline style height
+		block.style.height = height ;
+		console.log( "Expanding to " + block.style.height );
+		} ) ;
+		} ) ;
+	} ;
+</script>
+
+</body></html>

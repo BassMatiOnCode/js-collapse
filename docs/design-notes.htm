@@ -1,0 +1,551 @@
+﻿<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="template-info" file-name="empty.htm" version="2022-12-01" editor="USP" />
+<meta name="author" content="USP" />
+<meta name="creation-date" content="2023-08-02" />
+<meta name="editor" content="USP" />
+<meta name="change-date" content="2023-08-02" />
+<meta name="version" content="1" />
+<meta name="categories" content="" />
+<meta name="tags" content="" />
+<meta name="description" content="This page deals with the implementation. We will start with collapsible chapters, because here we can start simple and develop the full concept in small steps. Additionally, collapsible chapters exhibit most of the functionality that will also appear in other collapsible structures.." />
+
+<link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
+<link rel="stylesheet" href="/inc/page.css" />
+<link rel="stylesheet" href="/site.css" />
+<style>
+dl.requirement-list dd + dt { margin-top : 20px }  
+dl.requirement-list dd.see::before { content : "See also: " }
+dl.requirement-list dd.ref::before { content : "References: " }
+dl.requirement-list span[cancelled]::before { content : "CANCELLED " ; color :indianred } 
+</style>
+ 
+<title>Web Toolbox > JS-Collapse > Implementation</title>
+
+</head><body><header id="page-header"><object data="title.svg" type="image/svg+xml"></object></header><div id="main-toolbar"></div><main id="page-content">
+
+<h1>Implementation</h1>
+
+<p id="page-abstract"></p>
+
+<h2 cbc>Design Notes</h2><div>
+
+<p>Collapsible structures require two HTML elements:</p>
+
+<ol>
+<li>A <em>controller</em>, and</li>
+<li>a collapsible <em>content container</em>.</li>
+</ol>
+
+<p>The controller holds the structure state, <em>expanded</em>, <em>collapsing</em>, <em>collapsed</em>, and <em>expanding</em>, and exhibits an icon to indicate the controller state. The content container expands to the full height of the content, or collapses to zero height to hide the content.</p>
+
+<p>The library will provide four implementations:</p>
+
+<dl>
+<dt>Collapsible chapters</dt>
+<dd>A heading element (<tt>h1</tt> to <tt>h5</tt>), which functions as the controller, followed by a <tt>div</tt> element as content container.</dd> 
+
+<dt>Collapsible definition lists (<tt>dl</tt>)</dt>
+<dd>A definition title (<tt>dt</tt>) serves as controller, followed by a definition data (<tt>dd</tt>) element that holds the content.</dd>
+
+<dt>Collapsible unordered list trees</dt>
+<dd>An <tt>li</tt> element is the controller, a nested <tt>ul</tt> element is the content container.</dd> 
+
+<dt>Collapsible ordered list trees</dt>
+<dd>An <tt>li</tt> element is the controller, a nested <tt>ol</tt> element is the content container. List items will have an <em>order number</em> in addition to the controller icon.</dd> 
+</dl>
+
+<p>All variants can be nested, so that tree structures are possible.</p>
+
+<!--h2--></div>
+
+<h2 cbc>Controller States</h2><div>
+
+<p>In the course of development, I found that a solid implementation requires four states:</p>
+
+<ul>
+<li>expanded</li>
+<li>collapsing</li>
+<li>collapsed</li>
+<li>expanding</li>
+</ul>
+
+<p>These states are visited in exactly the same order, up or down. Other transitions are not allowed.</p>
+
+<!--h2--></div>
+
+<p>We will start development with the collapsible chapter structure, because most of the features will appear here, while the structure itself is simple enough for not getting confused at once.</p>
+
+<h2 cbc>Content Container Overflow</h2><div>
+
+<p>The documents <a href="01-overflow.htm">Overflow Hidden</a> and
+<a href="02-overflow.htm">Overflow Clip</a> explore the CSS for collapsible content containers. The code is based on a stand-alone <tt>div</tt> element. The results should carry over to controller-container configuration. Additionally we will keep container height <em>transitions</em> in mind &ndash; the container height will smoothly reduce height until fully collapsed, or increase height until fully expanded.</p>
+
+<p>A note on CSS <tt>overflow</tt>: The <tt>clip</tt> value is currently not supported on browsers with low market share. <tt>Overflow-y:hidden</tt> causes <tt>overflow-x:visible</tt> to be overridde with <tt>overflow-x: auto</tt> &ndash; which can show horizontal scrollbars. So we are bound to use <tt>overflow:hidden</tt>, which effectively rules out the use of horizontal overflow effects.</p>
+
+<p>Here is the CSS code</p>
+
+<figcaption class="listing">Overflow:hidden</figcaption>
+<pre>
+[state="expanded"] {
+	height : auto ;
+	}
+[state="collapsing"] {
+	height : 0px ;
+	overflow : hidden ;
+	}
+[state="collapsed"] {
+	height : 0px ;
+	overflow : hidden ;
+	}
+[state="expanding"] {
+	overflow : hidden ;
+	}
+</pre>
+
+<p>The <tt>height</tt> property in the state <tt>expanded</tt> could be omitted, because <tt>auto</tt> is the default value.</p>
+
+<p>To simulate the transition, set <tt>element.style.height</tt> to the current numeric height value, then change the <tt>state</tt> attribute to <tt>collapsing</tt>. There is no <tt>transition</tt> defined on the <tt>height</tt> property, so we can simulate by gradually setting <tt>element.style.height</tt> to zero.</p>
+
+<p>Then we can set the <tt>state</tt> to <tt>"collapsed"</tt> and delete <tt>element.style.height</tt>. The CSS rule for the collapsed state now defines the height of the DIV element.</p>
+
+<p>To start expansion, we set <tt>element.style.height</tt> to <tt>0px</tt>, then we can change the <tt>state</tt> to <tt>expanding</tt>. Again, the <tt>element.style.height</tt> overrides a CSS rule, and we can simulate expansion by gradually increasing the height value, until we reach the fully expanded height.</p>
+
+<p>Then we set <tt>state="expanded"</tt> and remove <tt>element.style.height</tt>. The height of the content container <tt>d</tt> is now controlled by its content again.</p>
+
+<p>The style sheet above works with <tt>overflow:hidden</tt>. The stylesheet below works with <tt>overflow-y:clip</tt>. Between these two there is a small difference in dealing with horizontally overflowing content while collapsing or expanding.</p>
+
+<figcaption class="listing">Overflow-y:clip</figcaption>
+<pre>
+[state="expanded"] {
+	height : auto ;  /* can be omitted */
+	}
+[state="collapsing"] {
+	height : 0px ;
+	overflow-y : clip ;
+	}
+[state="collapsed"] {
+	height : 0px ;
+	overflow : clip ;  /* hidden will also work fine */
+	}
+[state="expanding"] {
+	overflow-y : clip ;
+	}
+</pre>
+
+<!--h2--></div>
+
+<h2 cbc>Node Icons</h2><div>
+
+<p>Demo: <a href="03-node-icons.htm">node-icons.htm</a></p>
+
+<p>Node icons are implemented as background images of the <tt>::before</tt> pseudo-element of the controller.</p>
+
+<figcaption class="listing">Controller node icons base properties</figcaption>
+<pre>
+[cbc]::before {
+	content : "\00A0"  ;  
+	display : inline-block ;
+	width : 30px ;
+	margin-right: 10px ;
+	background-repeat : no-repeat ;
+	background-position : center center ;
+	}
+</pre>
+
+<p>The CSS rule above selects the <tt>::before</tt> element of elements with a <tt>cbc</tt> attribute. The text content is set to the Unicode 0xA0 character, which is a non-breaking whitespace. A pure whitespace content would prevent the element from being rendered.</p>
+
+<p>The <tt>display : inline-block</tt> setting allows the element to be sized, so that we can define a <tt>width</tt> and set the <tt>margin-right</tt>.
+
+<p>Background images can be sized and positioned, which otherwise could be difficult. The disadvantage of background images is that be cannot link external stylesheets into SVG files. So if you need different color sets you will have to duplicate an SVG icon set for each color.</p>
+
+<p>The icons size may depend on the controller tag name, or, to be precise, on the font size. For instance, an <tt>h1</tt> controller icon should be larger than an <tt>h5</tt> icon. This is solve with the following set of rules:</p>
+
+<figcaption class="listing">Individual controller icon sizes</figcaption>
+<pre>
+h1[cbc]::before {	background-size : 27px }
+h2[cbc]::before {	background-size : 25px }
+h3[cbc]::before {	background-size : 22px }
+h4[cbc]::before {	
+	background-size : 20px ; 
+	line-height : 20px ;
+}
+h5[cbc]::before {	
+	background-size : 18px ; 
+	line-height : 18px ;
+	}
+</pre>
+
+<p>Icon image depend on the controller state, so we have a set of four rules that set the background image:</p>
+
+<figcaption class="listing">Icon image assignments</figcaption>
+<pre>
+[cbc="collapsing"]::before ,
+[cbc="collapsed"]::before {
+	background-image : url( /inc/js-collapse/orange-plus.svg );
+	}
+[cbc="expanding"]::before ,
+[cbc="expanded"]::before {
+	background-image : url( /inc/js-collapse/orange-minus.svg );
+	}
+</pre>
+
+<p>Another rule moves the collapsible chapter controllers to the left by setting a negative left margin:</p>
+
+<figcaption class="listing">Moving the controller to the left</figcaption>
+<pre>
+[cbc]:has(+div) { margin-left : -20px ; }
+</pre>
+
+<p>This works because we use <tt>overflow-y : clip</tt> in the non-expanded states.</p>
+
+<!--h2--></div>
+
+<h2 cbc>Content Indentation</h2><div>
+
+<p>Demo: <a href="04-content-indentation.htm">content-indentation.htm</a></p>
+
+<p>The controller element is moved to the left with a negative margin, so that the icon visually stands out from the content text:</p>
+
+<figcaption class="listing">Indentation rules</figcaption>
+<pre>
+[cbc]:has(+div) {
+	margin-left : -20px ;
+	}
+[cbc] + div {
+	padding-left : 20px ;
+	margin-left : -20px ;
+	}
+</pre>
+
+<p>But we have to compensate for the fact that the content container has <tt>overflow : hidden</tt> in the non-expanded states. Without further measures, controller icons in nested chapters would be clipped &ndash; which doesn't look very pretty.</p>
+
+<p>So we add some padding at the left side of the content container, which moves the content to the right by 20 pixels and thereby provides some space for the controller icons to go in. To get the text visually back to the same horizontal position, a negative left margin of the same amount moves the entire content container back to the left by the same mount, and thereby "compensates" the padding &ndash; provided the <tt>body</tt> element has enough padding or margin on the left size. Otherwise, the controller icons would be clipped on the left by the browser window.</p>
+
+<!--h2--></div>
+
+<h2 cbc>Event-Triggered State Transitions</h2><div>
+
+<p>Demo: <a href="05-event-transitions.htm">event-transitions.htm</a></p>
+
+<p>To let the transition from fully expanded height to 0px and back appear smooth, we define a <tt>transiton</tt> rule on the <tt>height</tt> property of the content container:</p>
+
+<figcaption class="listing">Transition rules</figcaption>
+<pre>
+[cbc] + div  {
+	transition : height linear 1s;
+		/* WORKAROUND */
+	border-top  : 1px solid transparent;
+	border-bottom  : 1px solid transparent;
+</pre>
+
+<p>The rules that control the container height have already been explained, but for clarity here again:</p>
+
+<figcaption class="listing">Container height control</figcaption>
+<pre>
+[cbc="expanded"] + div {
+	height : auto ;
+	}
+[cbc="collapsing"] + div {
+	height : 0px ;
+	overflow : hidden ;
+	}
+[cbc="collapsed"] + div {
+	height : 0px ;
+	overflow : hidden ;
+	}
+[cbc="expanding"] + div {
+	height : auto ;
+	overflow : hidden ;
+	}
+</pre>
+
+<p>The initialization code collects the collapsible block containers and processes them:</p>
+
+<figcaption class="listing">Init code</figcaption>
+<pre>
+const controllers = document.querySelectorAll( "[cbc]" );
+for ( const controller of controllers ) {
+	controller.setAttribute( "cbc", "expanded" );
+	const block = controller.nextElementSibling ;
+	...
+	};
+</pre>
+
+<p>The state transitions are initiated in the icon click event handler:</p>
+
+<figcaption class="listing">Icon click event handler</figcaption>
+<pre>
+controller.addEventListener( "click", evt => {
+	switch ( evt.target.getAttribute( "cbc" )) {
+	case "expanded" :
+		collapse( evt.target );
+		break;
+	case "collapsed" :
+		expand( evt.target );
+		break;
+		}
+	evt.preventDefault( );
+	evt.stopPropagation( );
+	} ) ;
+</pre>
+
+<p>The event handler is an anonymous function that calls the <tt>collapse</tt> or <tt>expand</tt> function, depending on the controller state.</p>
+
+<p>Additionally, the transition is monitored with a transition end event handler:</p>
+
+<figcaption class="listing">Transition end event handler</figcaption>
+<pre>
+block.addEventListener( "transitionend", function ( evt ) {
+	switch ( this.getAttribute( "cbc" )) {
+	case "expanding" :
+		this.setAttribute( "cbc", "expanded" );
+		evt.target.style.removeProperty( "height" );
+		break;
+	case "collapsing" :
+		this.setAttribute( "cbc", "collapsed" );
+		break;
+		}
+	evt.preventDefault( );
+	evt.stopPropagation( );
+	}.<hi>bind</hi>( <hi>controller</hi> ) ) ;
+</pre>
+
+<p>Note that the event handler is a function which is <em>bound to the controller</em>. This allows to address the content container with <tt>evt.target</tt> and the associated controller with <tt>this</tt> inside the function code.</p>
+
+<p>The code inside finishes the transition. And sets the appropriate controller state. An overriding <tt>height</tt> property, defined on the <tt>element.style</tt>, is removed so that the style height as defined in the cascading stylesheet rules comes into effect.</p>
+
+<p>Now let's see what the <tt>collapse()</tt> function does:</p>
+
+<figcaption class="listing">The collapse() function</figcaption>
+<pre>
+function collapse ( controller ) { 
+	const block = controller.nextElementSibling ;
+	<hi>block</hi>.<hi>style</hi>.<hi>height</hi> = window.<hi>getComputedStyle</hi>( <hi>block</hi> ).<hi>height</hi> ;
+	window.requestAnimationFrame( ( ) => {
+	window.requestAnimationFrame( ( ) => {
+		controller.setAttribute( "cbc", "collapsing" );
+		block.style.removeProperty( "height" );
+		} ) ;
+		} ) ;
+	} ;
+</pre>
+
+<p>When the controller icon in the "expanded" state receives a click event, the CSS rules impose a <tt>heigt:auto</tt> css property on the content container. This is a non-numerical value that cannot be used in a transition. To change that, we retrieve the <em>computed style height</em> and set the <tt>style.height</tt> property to that numerical value.</p>
+
+<p>We now can set the controller state to "collapsing" &ndash; but if we do that on the same message loop thread, the height would change immediately, without smooth transition.</p>
+
+<p>So we need some short delay. We could use <tt>window.setTimeout()</tt>, which runs a callback after the specified delay. But the browser behavious seems to be non-deterministic. If the delay is too short, the transition "sometimes" may fail. If the delay is too long, the GUI appears to be lagging behind. So we better use <tt>window.requestAnimationFrame()</tt>, which runs a callback on the next available render thread. This is more deterministic.</p>
+
+<p>Experiments have shown that <em>two</em> such consecutive delays are required in order to get it right. So no, these two chained <tt>getAnimationFrame()</tt> calls are not a bug.</p>
+
+<p>After the state has been changed to "collapsing". The related CSS rule imposes a height of 0px on the container, but there is still the <tt>container.style.height</tt> active, which overrides the CSS rule. If we remove that property, the transition begins.</p>
+
+<p>When transision has finished, the <tt>transitionEndHandler</tt> is called which sets the controller state to "collapsed". If we controlled <tt>overflow-y</tt> with <tt>clip</tt>, this would be the time to also set <tt>overflow-x : clip</tt> in order to prevent a collapsed content container from unnecessarily inflate the page width.</p>
+
+<p>Next, we will inspect expansion. The click event handler calls the <tt>expand()</tt> function:</p>
+
+<figcaption class="listing">Expanding a container</figcaption>
+<pre>
+ function expand ( controller ) {
+	const block = controller.nextElementSibling ;
+	controller.setAttribute( "cbc", "expanding" );
+	const height = window.getComputedStyle( block ).height ;
+	block.style.height = "0px" ;
+	window.requestAnimationFrame( ( ) => {
+	window.requestAnimationFrame( ( ) => {
+		block.style.height = height ;
+		} ) ;
+		} ) ;
+	} ;
+</pre>
+
+<p>The first problem is to determine the numerical target height. Therefore our first action is to set the controller state to <tt>expanding</tt>, which activates a CSS rule with a property <tt>height : auto</tt>. Because there is no <tt>container.style.height</tt> property active, the CSS rule is effective, and we can retrieve the computed style heigt value, which will be used shortly.</p>
+
+<p>But firstly, we must set <tt>container.style.height = "0px"<tt> in order to override <tt>height : auto</tt>. Now we can request two consecutive animation frames and then start the transition by setting <tt>container.style.height</tt> to the fully expanded height value, which has been calculated earlier.</p>
+ 
+<p>When the transistion ends, all we have to do is to set the controller state to <tt>expanded</tt> and remove the overriding <tt>container.style.height</tt> property.</p>
+
+<h3>Abrupt Content Position Changes</h3><div>
+
+<p>When I removed the content container borders, the content started to abruptly change its vertical position when the controller enters or leaves the "expanded" state. Investigations indicate that </p>
+
+<ol>
+<li>The <tt>p</tt> elements have a top and bottom margins which vertically overflow the content container borders.</li>
+<li>The upper margin of that paragraph does not collapse with the bottom margin of the controller element during height transition.</li>
+<li>The upper paragraph margin <em>does</em> collapse with the controller's bottom margin in the state "expanded".</li>
+<li>This behaviour disappears as soon as the content container has top and bottom borders.</li>
+</ol>
+
+<p>So the workaround defines a transparent border, and the effect disappears.</p>
+
+<figcaption class="listing">Jumping content fix</figcaption>
+<pre>
+[cbc] + div  {
+	border-top  : 1px solid transparent;
+	border-bottom  : 1px solid transparent;
+</pre>
+
+<!--h3--></div>
+
+<!--h2--></div>
+
+<h2 cbc>Dynamic Vertical Spacing</h2><div>
+
+<p><a href="06-vertical-spacing.htm">vertical-spacing.htm</a></p>
+
+<p>Collapsible chapters appear visually as lists with collapsible list items. A stack of drawers, sort of. Abundant space between collapsed list items looks strange. It would be nice if two consecutive closed chapters moved closer to each other.</p>
+
+<p>To achieve that, we only have to add a few CSS rules:</p>
+
+<figcaption class="listing">Styles for dynamic vertical spacings
+<pre>
+[cbc] { 
+	transition : margin-top,margin-bottom linear,linear  1s,1s;
+	}
+[cbc="collapsed"]:has(+div+[cbc="collapsing"]) ,
+[cbc="collapsing"]:has(+div+[cbc="collapsed"]) ,
+[cbc="collapsed"]:has(+div+[cbc="collapsed"]) {
+	margin-bottom : 0px ;
+	}
+[cbc="collapsed"]+div+[cbc="collapsing"] ,
+[cbc="collapsing"]+div+[cbc="collapsed"] ,
+[cbc="collapsed"]+div+[cbc="collapsed"] {
+	margin-top : 0px ;
+	}
+</pre>
+
+<p>The idea is to reduce the bottom and top margins of adjacent collapsed controllers, and to add a transition property on these controllers. See the CSS code in the listing above.</p>
+
+<!--h2--></div>
+
+ <h3 cbc>Thoughts on Implementation</h3><div>
+
+<p>To collapse a container, the <tt>height</tt> property is set to <tt>0px</tt>. Without measures, the content will still be visible, it overflows the container border at the bottom. To change that, we set the <tt>overflow-y</tt> property to <tt>clip</tt> or <tt>hidden</tt>.</p>
+
+<p>Setting <tt>overflow-y : hidden</tt> overrides <tt>overflow-x : visible</tt> with <tt>overflow-x : auto</tt>. As a result, the <tt>div</tt> container will show a horizontal scrollbar. This is not what the user expects. On the other hand, the <tt>clip</tt> value is not yet supported by all browsers, although their market share is negligible (see <a href="https://caniuse.com/mdn-css_types_overflow_clip">Can I use</a> for details). </p>
+
+<p>So we have two CSS options:</p>
+
+<figcaption class="listing">The <tt>overflow-y : clip</tt> version</figcaption>
+<pre>
+div { 
+	overflow-y : clip 
+	}
+div[state="expanded"] { 
+	height : auto ; 
+	}
+div[state="expanding"] ,
+div[state="collapsing"] { 
+	height : 0px ;
+	}
+div[state="collapsed"] { 
+	height : 0px ;
+	overflow-y : clip ; 
+	}
+</pre>
+
+<p>and</p>
+
+<figcaption class="listing">The <tt>overflow : hidden</tt> version</figcaption>
+<pre>
+div[state="expanded"] { 
+	height : auto ;
+	}
+div[state="collapsed"] { 
+	height : 0px ;
+	overflow : hidden ;
+	}
+</pre>
+
+<p>The clip version has the disadvantage that content overflowing to the right, although hidden by the zero-height container, will cause the page to show a horizontal scroll bar. This might confuse the user. We could address that with a third state as shown above.</p>
+
+<p>The <tt>overflow : hidden</tt> version has the disadvantage that content cannot overflow horizontally while exanding or collapsing. While this is not a problem on the right side, it could be a problem on the left. For instance, we cannot shift the controller icons to the left over the container border so that the stick out a little bit for a better appearance. But that can be mitigated with by shifting the content text to the right with a left padding on the content container.</p>
+
+<p>To check that out, open <a href="01-overflow.htm">01-overflow.htm</a>. Right-click on the DIV element and select "inspect" from the context menu. The DIV element should be selected on the elements tab. On the styles panel, activate the "Styles" tab. You should see the following rule: </p>
+
+<figcaption class="listing">CSS rule for expanded blocks</figcaption>
+<pre>
+[cbc="expanded"] { height: auto; }
+</pre>
+
+<p>If necessary, press ESC on the keyboard to show the console drawer. Enter the follwing commands:</p>
+
+<figcaption class="listing">Changing the content container state</figcaption>
+<pre>
+d.setAttribute("cbc","collapsed")
+d.setAttribute("cbc","expanded")
+</pre>
+
+<p>You should see the container collapsing and expanding. Note the change in the CSS rules on the "Styles" panel: The <tt>height</tt> property changes between <tt>0px</tt> and <tt>auto</tt>.</p>
+
+<p>Now expand the DIV element so that the CSS rule height property is set to <tt>auto</tt>. Then locate the <tt>element.style { }</tt> rule at the top of the "Styles" panel. Click on the rule, and enter <tt>height: 30px;</tt>. Click on the value and press the up/down keys on the keyboard to roll through the values. This simulates an animated collapsing or expanding container. Note that the DIV content is clipped at the bottom, but not on the sides.</p>
+
+<!--h3--></div>
+<!--h2--></div>
+
+<h2 cbc>Collapsing Block Controllers</h2><div>
+
+<p>When this is OK, we can go one step further.</p>
+
+<p>A collapsible chapter has the following HTML structure:</p>
+
+<figcaption class="listing">Collapsible chapter structure</figcaption>
+<pre>
+&lt;<hi>h2</hi> cbc="expanded"&gt;Heading 2&lt;<hi>/h2</hi>&gt;
+&lt;<hi>div</hi>&gt;content&lt;<hi>/div</hi>&gt;
+</pre>
+
+<p>A heading element, followed by a <tt>DIV</tt> element. Collapsible block controller, and the collapsible block. The <tt>cbc</tt> attribute on the controller stores the state value, either "expanded", or "collapsed".</p>
+
+<p>The CSS rules to control the container are:</p>
+
+<figcaption class="listing">CSS rules for collapsible containers</figcaption>
+<pre>
+[cbc="<hi>expanded</hi>"]+div { height : <hi>auto</hi> }
+[cbc="<hi>collapsed</hi>"]+div { height : <hi>0px</hi> }
+</pre>
+<!--h2--Overflow--></div>
+
+<h2 cbc>Transitions</h2><div>
+
+<p>Collapsing a content container can be done with setting the style property <tt>display : none</tt>. This takes the container out of the layout flow and thereby is invisible. But we want a smooth transition between zero and full height. This is done with a transistion style property:</p>
+
+<figcaption class="listing">Height transition settings</figcaption>
+<pre>
+div {
+	border : 1px solid silver;
+	<hi>transition : height linear 1s</hi> ;
+	}
+</pre>
+
+<p>This can be tested in <a href="http://localhost:4507/overflow.htm">overflow.htm</a>. Open the F12 developer tools, activate the elements tab, select the DIV id="d" element. On the styles panel, there should be a rule active:
+
+<figcaption class="listing">CSS height is "auto"</figcaption>
+<pre>
+[cbc="expanded"] { height: auto; }
+</pre>
+
+<p>This means that the DIV container will resize its height to fit the content.</p>
+
+<p>Transistions can only be applied to numerical values, a transition from "auto" to "0px" won't work. The current value depends on severalf factors, and can be found on the "Computed" styles tab in the "height" entry. On my machine, it is "257.5px".</p>
+
+<p>Now switch back to the "Styles" panel and find the "element.style" rule right at the top. Click on it, and enter the property "height: 257.6px". This is an inline style value, which overrides the stylesheet rule beneath: The entry "height: auto" should be struck through.</p>
+
+<p>We have now a numerical property value. Now click the element style value and change it to "0px". You should see the DIV box shrinking over one second.</p>
+
+<p>Then change the value back to "257.5px". You should see the DIV growing.</p> 
+
+<p>Then delete the property from the element style, so that the stylesheet rule above comes back into effect. Alternatively, click the checkbox in front to deactivate the entry.</p>
+
+<p>This is what the automation script will do when you click on a controller icon to collapse or expand the associated block.</p>
+
+<!--h2--Transitions--></div>
+
+<p>The rule reads: A DIV element, preceeded by an element with a cbc attribute set to "expanded" | "collapsed" has the height property set to "auto" | "0px".</p>
+
+
+
+</main><footer id="page-footer"></footer><script type="module" src="/inc/page.js" ></script></body></html>

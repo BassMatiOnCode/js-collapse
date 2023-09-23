@@ -22,9 +22,30 @@ ul.collapsible li::before {
 	background-position : center center ;
 	background-size : 100% ;
 	}
-
-	/* Nested collapsed lists must be hidden */
+li[cbc] > ul {
+	transition : height linear 1s ;
+	}
+li[cbc="expanded"] > ul {
+	height : auto ;
+	}
+li[cbc="collapsing"] > ul {
+	height : 0px ;
+	overflow : hidden ;
+	}
 li[cbc="collapsed"] > ul {
 	height : 0px ;
-	overflow-y : hidden ;
+	overflow : hidden ;
+	}
+li[cbc="expanding"] > ul {
+	height : auto ;
+	overflow : hidden ;
+	}
+/* Dynamic vertical spacing */
+[vertical-spacing="dynamic"] li[cbc] {
+	transition : margin-top, margin-bottom linear, linear 1s, 1s ;
+	}
+[vertical-spacing="dynamic"] li[cbc="expanding"] , 
+[vertical-spacing="dynamic"] li[cbc="expanded"] {
+	margin-top : 10px ;
+	margin-bottom : 10px ;
 	}

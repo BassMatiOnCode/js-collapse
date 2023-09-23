@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="template-info" file-name="empty.htm" version="2022-12-01" editor="USP" />
+<meta name="author" content="USP" />
+<meta name="creation-date" content="2023-08-02" />
+<meta name="editor" content="USP" />
+<meta name="change-date" content="2023-08-02" />
+<meta name="version" content="1" />
+<meta name="categories" content="" />
+<meta name="tags" content="" />
+<meta name="description" content="" />
+
+<link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
+<link rel="stylesheet" href="/inc/page.css" />
+<link rel="stylesheet" href="/site.css" />
+<style>
+dl.requirement-list dd + dt { margin-top : 20px }  
+dl.requirement-list dd.see::before { content : "See also: " }
+dl.requirement-list dd.ref::before { content : "References: " }
+dl.requirement-list span[cancelled]::before { content : "CANCELLED " ; color :indianred } 
+</style>
+ 
+<title>Web Toolbox > JS-Collapse > Requirements</title>
+
+</head><body><header id="page-header"><object data="title.svg" type="image/svg+xml"></object></header><div id="main-toolbar"></div><main id="page-content">
+
+<h1>Project Planning</h1>
+
+<h2 cbc>Requirements</h2><div>
+
+<dl class="requirement-list">
+<dt id="req-1">REQ-1: Controller icons</dt>
+<dd>A collapsible block controller must carry an icon that represents the controller state. For example, plus | minus signs or up | down pointing triangles.</dd>
+<dd class="ref"><a href="#imp-1">IMP-1</a></dd>
+
+<dt id="req-2" cancelled>REQ-2: Controller icon visibility</dt>
+<dd>A controller icon must must not be hidden by a parent content container, unless that container is collapsed.</dd>
+<dd class="ref"><a href="#imp-8">IMP-8</a></dd>
+
+<dt id="req-3">REQ-3: Content indentation</dt>
+<dd>It must be possible to indent the content text so that the controller icon sticks out to the left.</dd>
+<dd class="ref"><a href="#imp-1">IMP-1</a></dd>
+
+<dt id="req-4">REQ-4: Smooth content container height transitions</dt>
+<dd>Collapsing or expanding a content container must be visually "smooth".</dd>
+<dd class="ref"><a href="#imp-2">IMP-2</a></dd>
+
+<dt id="req-5">REQ-5: Content container height</dt>
+<dd>In the expanded state, the container must adjust its height to always fit the content. In the collapsed state, the container height is zero. In the expanding and collapsing states, the container height is determined by the transition.</dd>
+<dd class="ref"><a href="#imp-3">IMP-3</a></dd>
+
+<dt id="req-6">REQ-6: Page width inflation</dt>
+<dd>An expanded container must allow content to overflow over the right border and thereby inflate the page width. A collapsed content container must clip content horizontally so that the content width does not inflate the page width.</dd>
+<dd class="see"><a href="#req-6">REQ-6</a></dd>
+<dd class="ref"><a href="#imp-4">IMP-4</a></dd>
+
+<dt id="req-7">REQ-7: No scroll bars on content containers</dt>
+<dd>A container must not show horizontal scrollbars. To access horizontally overflowing content, the horizontal scrollbar at the bottom of the page must be used.</dd>
+<dd class="ref"><a href="#imp-5">IMP-5</a></dd>
+
+<dt id="req-8">REQ-8: Dynamic vertical spacing</dt>
+<dd>The distance between two collapsed controllers must be reduced in order to represent a collapsed document like a vertically condensed list.</dd>
+<dd>Applies to collapsible chapters and collapsible definition lists. Does not apply to collapsible trees.</dd>
+<dd class="see"><a href="#req-11">REQ-11</a></dd>
+<dd class="ref"><a href="#imp-9">IMP-9</a></dd>
+
+<dt id="req-9">REQ-9: Smooth vertical space transitions</dt>
+<dd>If the space between containers changes, the transition must be "smooth".</dd>
+<dd class="see"><a href="#req-10">REQ-10</a></dd>
+</dl>
+
+<!--h2--></div>
+
+<h2 cbc>Implementation Specifications</h2><div>
+
+<dl class="requirement-list">
+<dt id="imp-1">IMP-1: Controller Icons</dt>
+<dd>Controller icons will be loaded with CSS rules, based on the controller state.</dd>
+<dd>Examples:<pre>
+[cbc="expanding"] + dt , 
+[cbc="expanded"] + dt { 
+	background-image : url( orange-minus.svg ) 
+	} 
+[cbc="collapsing"] + dt , 
+[cbc="collapsed"] + dt { 
+	background-image : url( orange-plus.svg ) 
+	} 
+</pre></dd>
+<dd class="ref"><a href="#req-1">REQ-1</a></dd>
+
+<dt id="imp-2">IMP-2: Controller icon visibility</dt>
+<dd>The controller icon container will not be shifted left by a negative left margin style.</dd>
+<dd class="ref"><a href="#req-2">REQ-2</a></dd>
+
+<dt id="imp-3">IMP-3: Content indentation</dt>
+<dd>The controller icon container will not be positioned outlside the parent content containter, e. g. by a negative left margin style.</dd>
+<dd class="ref"><a href="#req-3">REQ-3</a></dd>
+
+<dt id="imp-4">IMP-4: Smooth content container transitions</dt>
+<dd>Will be achieved by a CSS rule <tt>div { transition : height linear 1s }</tt> and code that ensures that transition start and end values are numerical.</dd>
+<dd class="ref"><a href="#req-4">REQ-4</a></dd>
+
+<dt id="imp-5">IMP-5: Content determines container height</dt>
+<dd>Achieved by a CSS rule <tt>div[state="expanded"] { height : auto }</tt> or the omission of a <tt>height</tt> property.</dd>
+<dd class="ref"><a href="#req-5">REQ-5</a></dd>
+
+<dt id="imp-6">IMP-6: Page width inflation</dt>
+<dd>In the collapsing, collapsed, and expanding state there is a CSS <tt>overflow : hidden</tt> property that prevents content to horizontally overflow the content container. In the expanded state, there is no <tt>overflow : hidden</tt> style property on the content container, so content can overflow the right container border and thereby inflate the page width.</dd>
+<dd class="ref"><a href="#req-6">REQ-6</a></dd>
+
+<dt id="imp-7">IMP-7: No scroll bars on content containers</dt>
+<dd>The container will not have a CSS <tt>overflow</tt> property in the expanded state, so the horizontally overflowing content will be visible and the container will not show a horizontal scroll bar. This is equivalent to <tt>overflow-x : visible</tt>.</dd>
+<dd>In the collapsing, collapsed and expanding states, the container will have an <tt>overflow : hidden</tt> property, which also prevents horizontal scrollbars.</dd>
+<dd class="ref"><a href="#req-7">REQ-7</a></dd>
+
+<dt id="imp-8">IMP-8: Dynamic vertical spacing</dt>
+<dd>CSS rules for <tt>transition</tt>, <tt>margin-top</tt> and <tt>margin-bottom</tt> will be added to the rule set for collapsible chapter headings and definition list titles.</dd>
+<dd class="ref"><a href="#req-8">REQ-8</a></dd>
+
+<dt id="imp-9">IMP-9: Smooth vertical space transitions</dt>
+<dd>CSS rules for <tt>transition</tt>, <tt>margin-top</tt> and <tt>margin-bottom</tt> will be added to the rule set for collapsible chapter headings and definition list titles.</dd>
+<dd class="ref"><a href="#req-9">REQ-9</a></dd>
+
+
+</dl>
+
+<!--h2--></div>
+
+</main><footer id="page-footer"></footer><script type="module" src="/inc/page.js" ></script></body></html>

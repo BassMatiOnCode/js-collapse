@@ -3,6 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="/inc/js-collapse/js-collapse-0.css" />
+<script type="module" src="/inc/js-collapse/js-collapse-0.js" ></script>
 <style>
 body { margin-left : 40px }
 </style>
@@ -10,32 +11,32 @@ body { margin-left : 40px }
 
 </head><body>
 
-<h1>Collapsing Ordered Lists</h1>
+<h1>Collapsing Unordered Lists</h1>
 
 <p>This is a text</p>
 
-<ol class="collapsible">
+<ul class="collapsible" vertical-spacing="dynamic">
 <li>Non-collapsible item</li>
 <li cbc="collapsed">Collapsible item
-	<ol>
-	<li cbc="collapsed">Collapsible item</li>
-	<li>Non-collapsible item</li>
-	<li>Non-collapsible item</li>
-	</ol></li>
+	<ul>
+	<li cbc="collapsed">Collapsible item<ul>
+		<li>Non-collapsible item</li>
+		<li>Non-collapsible item</li>
+		</ul></li>
+	</ul></li>
 <li cbc="expanded">Collapsible item
-	<ol>
+	<ul>
 	<li>Non-collapsible item</li>
 	<li>Non-collapsible item</li>
 	<li>Non-collapsible item</li>
-	</ol></li>
+	</ul></li>
 <li cbc="expanded">Collapsible item
-	<ol>
+	<ul>
 	<li>Non-collapsible item</li>
 	<li>Non-collapsible item</li>
 	<li>Non-collapsible item</li>
-	</ol></li>
+	</ul></li>
 <li>Non-collapsible item</li>
-</ol>
+</ul>
 
-<script type="module" src="/inc/js-collapse/js-collapse-0.js" ></script>
 </body></html>

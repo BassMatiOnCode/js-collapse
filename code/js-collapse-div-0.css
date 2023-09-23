@@ -12,50 +12,55 @@ h5[cbc]::before {
 	margin-right: 10px ;
 	background-position : center center ;
 	}
-
-	/* define icon size for each heading level */
-h1[cbc]::before { background-size : 27px ; }
-h2[cbc]::before { background-size : 22px ; }
-h3[cbc]::before { background-size : 18px ; }
-h4[cbc]::before { background-size : 15px ; }
-h5[cbc]::before { background-size : 15px ; }
-	
-	/* let heading icons stick a little bit out to the left */
-h1[cbc], h2[cbc], h3[cbc], h4[cbc], h5[cbc] {
-	margin-left : -15px ;
+h1[cbc]::before {	background-size : 27px }
+h2[cbc]::before {	background-size : 25px }
+h3[cbc]::before {	background-size : 22px }
+h4[cbc]::before {	
+	background-size : 20px ; 
+	line-height : 20px ;
+	}
+h5[cbc]::before {	
+	background-size : 18px ; 
+	line-height : 18px ;
+	}
+[cbc="expanded"] + div {
+	height : auto ;
+	}
+[cbc="collapsing"] + div {
+	height : 0px ;
+	overflow : hidden ;
+	}
+[cbc="collapsed"] + div {
+	height : 0px ;
+	overflow : hidden ;
+	}
+[cbc="expanding"] + div {
+	height : auto ;
+	overflow : hidden ;
+	}
+[cbc]:has(+div) {
+	margin-left : -20px ;
+	}
+[cbc] + div {
+	margin-left : -20px ;
+	padding-left : 20px ;
+	transition : height linear 1s;
+		/* WORKAROUND for jumping content bug */
+	border-top  : 1px solid transparent;
+	border-bottom  : 1px solid transparent;
 	}
 
-	/* changes of vertical space depending on state */
-h1[cbc]+div+h1[cbc="collapsed"], 
-h2[cbc]+div+h2[cbc="collapsed"], 
-h3[cbc]+div+h3[cbc="collapsed"], 
-h4[cbc]+div+h4[cbc="collapsed"], 
-h5[cbc]+div+h5[cbc="collapsed"] {
-	margin-top : 5px ;
+	/* dynamic vertical spacing */
+[cbc]:has(+div) { 
+	transition : margin-top,margin-bottom linear,linear  1s,1s;
 	}
-
-h1[cbc="collapsed"], 
-h2[cbc="collapsed"], 
-h3[cbc="collapsed"], 
-h4[cbc="collapsed"], 
-h5[cbc="collapsed"] {
-	margin-bottom : 5px ;
+[cbc="collapsed"]:has(+div+[cbc="collapsing"]) ,
+[cbc="collapsing"]:has(+div+[cbc="collapsed"]) ,
+[cbc="collapsed"]:has(+div+[cbc="collapsed"]) {
+	margin-bottom : 0px ;
 	}
-
-h1[cbc]+div+h1[cbc="expanded"], 
-h2[cbc]+div+h2[cbc="expanded"], 
-h3[cbc]+div+h3[cbc="expanded"], 
-h4[cbc]+div+h4[cbc="expanded"], 
-h5[cbc]+div+h5[cbc="expanded"] {
-	margin-top : 30px ;
+[cbc="collapsed"]+div+[cbc="collapsing"] ,
+[cbc="collapsing"]+div+[cbc="collapsed"] ,
+[cbc="collapsed"]+div+[cbc="collapsed"] {
+	margin-top : 0px ;
 	}
-
-h1[cbc="expanded"]+div, 
-h2[cbc="expanded"]+div, 
-h3[cbc="expanded"]+div, 
-h4[cbc="expanded"]+div, 
-h5[cbc="expanded"]+div {
-	margin-bottom : 30px ;
-	}
-
-

@@ -18,15 +18,46 @@ ol.collapsible li {
 
 	/* All list elements must  have the same spacing properties, including non-collapsible elements */
 ol.collapsible li::before {
-	margin-left : -40px ;
 	width : 0.9em ;
+	margin-left : -40px ;
 	margin-right: 30px ;
 	background-position : center center ;
 	background-size : 100% ;
 	}
 
-	/* Nested collapsed lists must be hidden */
+	/* All list elements must have the same spacing properties, including non-collapsible elements */
+ul.collapsible li::before {
+	width : 0.9em ;
+	margin-right: 10px ;
+	background-position : center center ;
+	background-size : 100% ;
+	}
+li[cbc] > ol {
+	transition : height linear 1s ;
+	}
+li[cbc="expanded"] > ol {
+	height : auto ;
+	}
+li[cbc="collapsing"] > ol {
+	height : 0px ;
+	overflow : hidden ;
+	}
 li[cbc="collapsed"] > ol {
 	height : 0px ;
-	overflow-y : hidden ;
+	overflow : hidden ;
+	}
+li[cbc="expanding"] > ol {
+	height : auto ;
+	overflow : hidden ;
+	}
+
+	/* Dynamic vertical spacing */
+
+[vertical-spacing="dynamic"] li[cbc] {
+	transition : margin-top, margin-bottom linear, linear 1s, 1s ;
+	}
+[vertical-spacing="dynamic"] li[cbc="expanding"] , 
+[vertical-spacing="dynamic"] li[cbc="expanded"] {
+	margin-top : 10px ;
+	margin-bottom : 10px ;
 	}

@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/inc/js-collapse/js-collapse-0.css" />
+<script type="module" src="/inc/js-collapse/js-collapse-0.js" ></script>
+<style>
+body { margin-left : 40px }
+dd p:first-child {
+	margin-top : 0px ;
+	}
+dd p {
+	margin-top : 5px ;
+	margin-bottom : 5px ;
+	}
+dd p:last-child {
+	margin-bottom : 0px ;
+	}
+dd > dl {
+	margin-bottom : 0px ;
+	}
+
+</style>
+<title>Web Toolbox > JS-Collapse > Collapsible Chapters</title>
+
+</head><body>
+
+<h1>Collapsing Definition Lists</h1>
+
+<p>This is a text</p>
+
+<dl class="collapsible" cbc-default="collapsed">
+<dt cbc>Title</dt><dd>
+<p>Definition text</p>
+<p>Definition text</p>
+<p>Definition text</p>
+</dd>
+
+<dt cbc>Title</dt>
+<dd>Definition text</dd>
+
+<dt cbc>Title</dt>
+<dd>Definition text
+<p>Has nested definition list</p><dl>
+	<dt cbc>Title</dt>
+	<dd>Definition</dd>
+	</dl></dd>
+
+<dt cbc>Title
+	<br/>Title
+	<br/>Title</dt>
+<dd>Definition text
+	<br/>Second line
+	<br/>Third line</dd>
+</dl>
+
+</body></html>

@@ -211,6 +211,16 @@ h1[cbc], h2[cbc], h3[cbc], h4[cbc], h5[cbc] {
 
 <!--h4--></div>
 
+<h4 cbc>Overflow</h4><div>
+
+<p>The CSS <tt>overflow</tt> property determines whether the content is visible or hidden outside the borders of a block element, or if scrollbars are shown. Sounds nice. But...</p>
+
+<p>Usually, the <tt>overflow-x</tt> is visible. The page then shows a horizontal scrollbar if necessary. While collapsing, <tt>overflow-y</tt> must be set to <tt>hidden</tt>. Unfortunately, this value overrides <tt>overflow-x</tt> to <tt>auto</tt> &ndash; the <tt>DIV</tt> container shows a horizontal scrollbar. This is not what we want.</p>
+
+<p>A possible solution: An expanding, collapsing or collapsed content container has <tt>overflow:hidden</tt>. </p>
+
+<!--h4--></div>
+
 <!--h3--></div>
 
 <h3 cbc>Tree Structures with Unordered List Elements</h3><div>

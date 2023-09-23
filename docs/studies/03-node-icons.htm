@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { 
+	margin-left : 40px 
+	}
+[cbc]::before {
+	content : "\00A0"  ;  /* non-breaking space gives it a content */
+	display : inline-block ;
+	width : 30px ;
+	margin-right: 10px ;
+	background-repeat : no-repeat ;
+	background-position : center center ;
+	}
+h1[cbc]::before {	background-size : 27px }
+h2[cbc]::before {	background-size : 25px }
+h3[cbc]::before {	background-size : 22px }
+h4[cbc]::before {	
+	background-size : 20px ; 
+	line-height : 20px ;
+}
+h5[cbc]::before {	
+	background-size : 18px ; 
+	line-height : 18px ;
+	}
+[cbc="collapsing"]::before ,
+[cbc="collapsed"]::before {
+	background-image : url( /inc/js-collapse/orange-plus.svg );
+	}
+[cbc="expanding"]::before ,
+[cbc="expanded"]::before {
+	background-image : url( /inc/js-collapse/orange-minus.svg );
+	}
+[cbc]:has(+div) {
+	margin-left : -20px ;
+	}
+div {
+	border : 1px none silver;
+	overflow-y : clip ;
+	}
+[cbc] + div {
+	transition : height linear 1s;
+	}
+[cbc="collapsed"] + div {
+	height : 0px ;
+	}
+[cbc="expanded"] + div {
+	height : auto ;
+	}
+	
+</style>
+<title>Web Toolbox > JS-Collapse > Collapsible Chapters</title>
+
+</head><body>
+<h1>Controller Icon</h1>
+
+<p>Other content</p>
+<h1 cbc>Heading 1</h1><div>
+<h2 cbc>Heading 2</h2><div>
+<h3 cbc>Heading 3</h3><div>
+<h4 cbc>Heading 4</h4><div>
+<h5 cbc>Heading 5</h5><div>
+<p>Content</p>
+<p>Content</p>
+<p>Content</p>
+<p>Content</p>
+<p>Content</p>
+<p>Content</p>
+<p>Content</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Other content</p>
+
+<script type="module">
+const controllers = document.querySelectorAll( "[cbc]" );
+for ( const controller of controllers ) {
+	controller.setAttribute( "cbc", "expanded" );
+	const block = controller.nextElementSibling ;
+	block.addEventListener( "transitionend", ( evt ) => {
+		console.log( "transition end " + evt.target.style.height );
+		if ( evt.target.style.height.length > 0 ) {
+			// container is now expanded
+			console.log( "removing inline style.height" );
+			evt.target.style.removeProperty( "height" );
+			}
+		evt.preventDefault( );
+		evt.stopPropagation( );
+		} ) ;
+	controller.addEventListener( "click", evt => {
+		switch ( evt.target.getAttribute( "cbc" )) {
+		case "expanded" :
+			collapse( evt.target );
+			break;
+		case "collapsed" :
+			expand( evt.target );
+			break;
+			}
+		} ) ;
+	}
+function collapse ( controller ) { 
+	const block = controller.nextElementSibling ;
+	// overwrite auto with a numeric value
+	block.style.height = window.getComputedStyle( block ).height ;
+	console.log( block.style.height );
+	window.requestAnimationFrame( ( ) => {
+	window.requestAnimationFrame( ( ) => {
+		// css height to 0px
+		controller.setAttribute( "cbc", "collapsed" );
+		// remove inline style to activate the css stylesheet
+		block.style.removeProperty( "height" );
+		} ) ;
+		} ) ;
+	} ;
+ function expand ( controller ) {
+	const block = controller.nextElementSibling ;
+	// set style.height = auto temporarily
+	controller.setAttribute( "cbc", "expanded" );
+	// get the fully expanded height
+	const height = window.getComputedStyle( block ).height ;
+	// stop transition. This overwrites stylesheet definition.
+	block.style.height = "0px" ;
+	window.requestAnimationFrame( ( ) => {
+	window.requestAnimationFrame( ( ) => {
+		// start transition by setting the inline style.height
+		block.style.height = height ;
+		console.log( block.style.height );
+		} ) ;
+		} ) ;
+	} ;
+</script>
+
+</body></html>

@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { margin-left : 40px }
+div {
+	border : 1px solid silver;
+	}
+[state="expanded"] {
+	height : auto ;  /* equivalent to an omitted height attribute */
+	}
+[state="collapsing"] {
+	height : 0px ;  /* overridden by element.style.height */
+	overflow-y : clip ;
+	}
+[state="collapsed"] {
+	height : 0px ;
+	overflow : clip ;  /*	clip or hidden ; */
+	}
+[state="expanding"] {
+	height : 0px ;  /* overridden by element.style.height */
+	overflow-y : clip ;
+	}
+.nowrap {
+	white-space : nowrap ;
+	}
+.movedLeft {
+	margin-left : -20px ;
+	}	
+</style>
+<title>Web Toolbox > JS-Collapse > Collapsible Chapters</title>
+
+</head><body>
+
+<h1>Overflow 1 Clip Variant</h1>
+
+<p>Instructions:</p>
+<ol>
+<li>Open the F12 browser developer tools, then reload the page.</li>
+<li>The script stops at the "debugger" instruction.</li>
+<li>Execute the script is single steps.</li>
+<li>Watch the reaction of the DIV container in the browser</li>
+<li>Frequently switch to the "Elements" > "Styles" tab and inspect the CSS rules in effect on the DIV element.</li>
+</ol>
+
+<p>It is also a good idea to execute the steps manually in the command line of the console drawer (ESC) while having the "Styles" tab open.</p>
+
+<p>Keep an eye on:</p>
+<ul>
+<li>Overflowing content to the right (first line)</li>
+<li>Overflowing content to the left (line in the middle)</li>
+</ul>
+
+<div id="d" state="expanded">
+<p class="nowrap">Content Content Content Content Content Content Content Content Content Content Content Content Content Content Content</p>
+<p>Content</p>
+<p>Content</p>
+<p class="movedLeft">Content</p>
+<p>Content</p>
+<p>Content</p>
+<p>Content</p>
+</div>
+
+<script type="module">
+// Execute single steps
+debugger ;
+// Prepare for collapsing by setting element.style.height to current value
+d.style.height="257.5px";
+d.setAttribute("state", "collapsing");
+// Simulate height transition
+d.style.height="200px";
+d.style.height="150px";
+d.style.height="100px";
+d.style.height="50px";
+d.style.height="0px";
+// Collapsed
+d.setAttribute("state", "collapsed");
+d.style.height="";
+// Prepare expansion
+d.style.height="0px";
+d.setAttribute("state", "expanding");
+// Simulate height transition
+d.style.height="50px";
+d.style.height="100px";
+d.style.height="150px";
+d.style.height="200px";
+d.style.height="257.5px";
+// Expanded
+d.setAttribute("state", "expanded");
+d.style.height="";
+</script>
+
+</body></html>

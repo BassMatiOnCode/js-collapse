@@ -6,23 +6,22 @@
 @import url( js-collapse-div-0.css ) ;
 @import url( js-collapse-ul-0.css ) ;
 @import url( js-collapse-ol-0.css ) ;
-@import url( js-collapse-dl-0.css ) ;
+@import url( js-collapse-dd-0.css ) ;
 
 dl.collapsible dt::before,
 ol.collapsible li::before,
 ul.collapsible li::before,
 [cbc]::before {
-	content : "\00A0"  ;  /* non-breaking space gives it a content */
+	content : "\00A0"  ;  /* non-breaking space */
 	display : inline-block ;
 	background-repeat : no-repeat ;
 	}
 
-	/* assign icon images */
-[cbc="collapsed"]::before { background-image : url(orange-plus.svg) }
-[cbc="expanded"]::before { background-image : url(orange-minus.svg) }
-
-	/* hide the content when a block is collapsed */
-[cbc="collapsed"]+div {
-	height : 0px ;
-	overflow-y : hidden ;
+[cbc="collapsing"]::before ,
+[cbc="collapsed"]::before { 
+	background-image : url(orange-plus.svg) 
+	}
+[cbc="expanding"]::before ,
+[cbc="expanded"]::before { 
+	background-image : url(orange-minus.svg) 
 	}
