@@ -2,26 +2,21 @@
  *		js-collapse-unordered-list-0.css
  */
 
-ul.collapsible {
-	padding-left : 0px ;	/* Root level should not be idented */
-	line-height : 160% ;
-	}
-
-ul.collapsible ul {
-	padding-left : 15px;	/* Levels below root must be indented */
-	}
-
-ul.collapsible li {
+ul:has( [cbc]) ,
+ul:has( [cbc]) ul {
+	/* controller icon space and indentation */
+	padding-left : 20px ;  
 	list-style-type : none ;
 	}
-
-	/* All list elements must have the same spacing properties, including non-collapsible elements */
-ul.collapsible li::before {
-	width : 0.9em ;
-	margin-right: 10px ;
-	background-position : center center ;
-	background-size : 100% ;
+ul:has(>[cbc]) > li::before {
+	width : 20px ;
+	margin-left : -20px ;
+	background-position : left center ;
+	background-size : 0.9em ;
 	}
+
+	/* Container height transitions */
+
 li[cbc] > ul {
 	transition : height linear 1s ;
 	}
@@ -40,7 +35,9 @@ li[cbc="expanding"] > ul {
 	height : auto ;
 	overflow : hidden ;
 	}
-/* Dynamic vertical spacing */
+
+	/* Dynamic vertical spacing */
+
 [vertical-spacing="dynamic"] li[cbc] {
 	transition : margin-top, margin-bottom linear, linear 1s, 1s ;
 	}

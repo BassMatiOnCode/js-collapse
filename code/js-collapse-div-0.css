@@ -42,8 +42,8 @@ h5[cbc]::before {
 	margin-left : -20px ;
 	}
 [cbc] + div {
-	margin-left : -20px ;
 	padding-left : 20px ;
+	margin-left : -20px ;
 	transition : height linear 1s;
 		/* WORKAROUND for jumping content bug */
 	border-top  : 1px solid transparent;

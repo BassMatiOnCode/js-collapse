@@ -1,5 +1,8 @@
 .vs
-/docs/inc/
+/cmd.exe.lnk
+/start-browser.lnk
+/start-webserber.bat
+/docs/inc
 /docs/inc/site.css
 /docs/inc/colors.css
 /docs/inc/logo.svg

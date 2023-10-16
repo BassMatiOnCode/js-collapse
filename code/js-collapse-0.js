@@ -1,7 +1,27 @@
 //
 //	js-collapse-0.js	2023-09-15		usp
 //
-
+export function expose( element ) {
+	while ( element = element.parentNode ) {
+		if ( element.tagName === "BODY" ) break;
+		switch ( element.tagName ) {
+		case "DIV" :
+		case "DD" :
+			const controller = element.previousElementSibling ;
+			if ( controller.getAttribute( "cbc" ) === "collapsed" ) expand ( controller ); 
+			break;
+		default : 
+			if ( element.getAttribute( "cbc" ) === "collapsed" ) expand ( element );
+			break;
+			}
+		}
+	}
+export function expandAllBlocks (  ) {
+	document.querySelectorAll( "#page-content [cbc='collapsed']" ).forEach( expand );
+	}
+export function collapseAllBlocks ( ) {
+	document.querySelectorAll( "#page-content [cbc='expanded']" ).forEach( collapse );
+	}
 export function setInitialState ( controller ) {
 	//	Searches for a parent that defines the default controller state.
 	//	If there is none, the controller state is set to expanded.
@@ -19,7 +39,7 @@ export function getContainer( controller ) {
 	case "DT" :
 		return controller.nextElementSibling ;
 	case "LI" :
-		return controller.querySelector( `LI > ${controller.parentNode.tagName}` );
+		return controller.querySelector( "LI > UL,LI > OL" );
 		}
 	}
 export function getController ( container ) {
@@ -94,5 +114,4 @@ export function initPage ( container=document.body ) {
 		if ( controller.getAttribute( "cbc" ) === "" ) setInitialState( controller );
 		}
 	}
-
 initPage( );

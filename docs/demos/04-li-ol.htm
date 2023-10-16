@@ -16,16 +16,21 @@ body { margin-left : 40px }
 
 <ol class="collapsible" vertical-spacing="dynamic">
 <li>Non-collapsible item</li>
-<li cbc>Collapsible item<ol>
+<li cbc>Collapsible item<ol start="10">
 	<li cbc>Collapsible item<ol>
-		<li>Non-collapsible item</li>
+		<li id="X">Non-collapsible item X</li>
 		<li>Non-collapsible item</li>
 		</ol></li>
 	</ol></li>
 <li cbc>Collapsible item
 	<ol>
 	<li>Non-collapsible item</li>
-	<li>Non-collapsible item</li>
+	<li>Non-collapsible item
+		<ol start="10">
+		<li>list item</li>
+		<li>list item</li>
+		<li>list item</li>
+		</ol></li>
 	<li>Non-collapsible item</li>
 	</ol></li>
 <li cbc>Collapsible item
@@ -37,5 +42,15 @@ body { margin-left : 40px }
 <li>Non-collapsible item</li>
 </ol>
 
+<p>This is a text</p>
+
+
+<h2>Findings</h2><div>
+
+<ol>
+<li>The :marker pseudo-element styling is very limited. 
+</ol>
+
+</div>
 <script type="module" src="/inc/js-collapse/js-collapse-0.js" ></script>
 </body></html>

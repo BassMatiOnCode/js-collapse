@@ -10,7 +10,7 @@
 <meta name="version" content="1" />
 <meta name="categories" content="" />
 <meta name="tags" content="" />
-<meta name="description" content="JS-Collapse is a JavaScript module that supports collapsible HTML elements like trees, lists or chapters." />
+<meta name="description" content="JS-Collapse is a JavaScript module that supports collapsible HTML elements like (book) chapters, definitions and trees with smooth transitions." />
 
 <link rel="icon" type="image/png" href="/favicon.png" sizes="16x16" />
 <link rel="stylesheet" href="/inc/page.css" />
@@ -24,15 +24,156 @@
 
 <p id="page-abstract"></p>
 
-<p>A large document may be divided into chapters and subchapters and further down. HTML provides five headings (H1 to H5) for this purpose. To aid navigation in the document and provide the reader with some kind of overview, it might be useful to collapse chapter bodies, so that only the headings remain visible. The reader can then expand the desired chapters and drill down to the information of interest.</p>
+<h2 cbc>Introduction</h2><div>
 
-<p>Collapsible structures comprise of a <i>controller</i> element (H1...H6 in this example) and a collapsible <i>block</i> that contains the content to be hidden. The controller carries an icon that reflects the state of the block, either collapsed or expanded. Plus and minus or triangles are commonly used.</p>
+<p>Collapsible chapters: A large document may be structured into chapters and sub-chapters, like a book. HTML provides five heading elements (H1 to H5) for five different structure levels. But it is difficult to scroll to a specific chapter in a long document. A common approach is to place a small table of contents at the top of the page. The idea proposed in this document is to <em>collapse chapter bodies</em> while leaving the chapter headings visible. The reader can then expand the desired chapters and drill down quickly to the desired information.</p>
 
-<p>Similarly, large definition lists (DL) might be collapsed to definition titles (DT), definition data (DD) can then be expanded upon request. The difference to collapsible chapters is that a single controller (DT) can have multible collapsible block (DD) elements.</p>
+<p>Collapsible structures comprise of a <i>controller</i> element (H1...H6 in this example) and a <i>collapsible content container</i>. The controller carries an icon that reflects the state of the container, either collapsed or expanded. Plus and minus or triangles are commonly used.</p>
 
-<p>Similarly, unordered lists (UL) can be used to structurize large lists into manageable trees. Branches can be collapsed and expanded similar to document chapters as described above.</p>
+<p>Example: <a href="demos/01-h9-div.htm">Collapsible chapters</a>.</p>
 
-<p>Similarly, ordered lists (OL) can be structured to form a tree, for instance to form a structured instruction list. They are very similar to collapsible UL trees, but they must carry the item numbers in addition to the controller state icon. Therefore, spacing might be a little bit more complex.</p>
+<p>These controller &ndash; container structures can be nested, and therefore implement <em>collapsible tree structures</em>.</p>
+
+<p>The same concept carries over to definition lists (DL) which might be collapsed to definition titles (DT, the controller), definition data (DD, the container) can then be expanded as required.</p>
+
+<p>Example: <a href="demos/02-dt-dd.htm">Collapsible definition lists</a>.</p>
+
+<p>Similarly, tree structures built on ordered (OL) and unordered lists (UL) can be used to create large but manageable lists. Branches can be collapsed and expanded similar to document chapters as described above.</p>
+
+<p>Example: <a href="demos/05-li-ul-ol.htm">Collapsible list structures</a>.</p>
+
+<!--h2--></div>
+
+<h2 cbc>Usage</h2><div>
+
+<h3 cbc>Collapsible Chapters</h3><div>
+
+<p>The library is implemented with some CSS and script files. They are integrated into the target document as follows:</p>
+
+<figcaption class="listing">Stylesheet and script integration</figcaption>
+<pre>
+&lt;link rel="stylesheet" href="/inc/js-collapse/js-collapse.css" /&gt;
+&lt;script type="module" src="/inc/js-collapse/js-collapse.js" &gt;&lt;/script&gt;
+</pre>
+
+<p>To create a collapsible chapter, add a chapter heading with a <tt>cbc</tt> attribute and a <tt>div</tt> element to the document:</p>
+
+<figcaption class="listing">A collapsible chapter</figcaption>
+<pre>
+&lt;h1 <hi>cbc</hi>&gt;1. Chapter Heading Level 1&lt;/h1&gt;&lt;<hi>div</hi>&gt;
+&lt;p&gt;Here goes the chapter content.&lt;/p&gt;
+&lt;/<hi>div</hi>&gt;
+</pre>
+
+<p>The page init code in <tt>js-collapse.js</tt> recognizes the <tt>cbc</tt> attribute and determines the initial controller state. The associated CSS rules decorate the HTML element with the appropriate icon image and collapse the <tt>div</tt> container if necessary.</p> 
+
+<p>To create a nested chapter structure, follow this scheme:</p>
+
+<figcaption class="listing">Nested collapsible chapters</figcaption>
+<pre>
+&lt;h1 <hi>cbc</hi>&gt;1. Chapter Heading Level 1&lt;/h1&gt;&lt;<hi>div</hi>&gt;
+
+&lt;p&gt;Here goes the chapter content.&lt;/p&gt;
+
+&lt;h2 <hi>cbc</hi>&gt;1.1 Chapter Heading Level 2&lt;/h1&gt;&lt;<hi>div</hi>&gt;
+&lt;p&gt;Here goes the chapter content.&lt;/p&gt;
+<cc>&lt;!--h2--&gt;</cc>&lt;<hi>/div</hi>&gt;
+
+&lt;h2 <hi>cbc</hi>&gt;1.2 Chapter Heading Level 2&lt;/h1&gt;&lt;<hi>div</hi>&gt;
+&lt;p&gt;Here goes the chapter content.&lt;/p&gt;
+<cc>&lt;!--h2--&gt;</cc>&lt;<hi>/div</hi>&gt;
+
+<cc>&lt;!--h1--&gt;</cc>&lt;<hi>/div</hi>&gt;
+</pre>
+
+<p>You may prefer to indent the nested chapters properly, or not as shown in the example above. Many text editors (like Visual Studio) have the ability to collapse HTML element bodies and auto-complete HTML tags, so correct indentation is not strictly necessary to maintain a correct document structure. The HTML comments on the closing <tt>div</tt> tags might be helpful.</p>
+
+<!--h3--></div>
+
+<h3 cbc>Collapsible Definition Lists</h3><div>
+
+<p>Collapsible definition lists follow the exact same scheme:</p>
+
+<figcaption class="listing">A collapsible definition list</figcaption>
+<pre>
+&lt;dl&gt;
+&lt;dt <hi>cbc</hi>&gt;Definition term&lt;/dt&gt;
+&lt;dd&gt;Definition text&lt;/dd&gt;
+
+&lt;dt <hi>cbc</hi>&gt;Definition term&lt;/dt&gt;
+&lt;dd&gt;Definition text&lt;/dd&gt;
+
+&lt;dt <hi>cbc</hi>&gt;Definition term&lt;/dt&gt;
+&lt;dd&gt;Definition text&lt;/dd&gt;
+&lt;/dl&gt;
+</pre>
+
+<p>Just decorate the controller with the <tt>cbc</tt> attribute, the support script will recognize the following <tt>dd</tt> element as collapsible content container.</p>
+
+<p>Collapsible definition lists can be nested as shown before to create a collapsible tree structure, just place a subordinate <tt>dl</tt> in the <tt>dd</tt> element and add <tt>cbc</tt> attributes to the <tt>dt</tt> definition titles.</p>
+
+<p>Note that the script only supports a single <tt>dt</tt> element, followed by a single <tt>dd</tt> element. If you need multiple definition terms and/or multiple definition text paragraphs, you can add <tt>br</tt> elements in between, or better enclose the content in a number of <tt>p</tt> paragrahps.</p>
+
+<!--h3--></div>
+
+<h3 cbc>Collaspible List-Based Tree Structures</h3><div>
+
+<p>Tree structures based on ordered <tt>ol</tt> or unordered lists <tt>ul</tt> are a little bit different: Where the collapsible content container is preceded by the controller element in the examples before, here the container element is a child of the controller element. But you don't have to worry about. Just decorate the controller element (which is always an <tt>li</tt>) with the <tt>cbc</tt> attribute:</p>
+
+<figcaption class="listing">A collapsible tree with undordered lists</figcaption>
+<pre>
+&lt;ul&gt;
+&lt;li&gt;list item&lt;/li&gt;
+&lt;li <hi>cbc</hi>&gt;list item
+	&lt;ul&gt;
+	&lt;li&gt;list item&lt;/li&gt;
+	&lt;li&gt;list item&lt;/li&gt;
+	&lt;li&gt;list item&lt;/li&gt;
+	&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;list item&lt;/li&gt;
+&lt;/ul&gt;
+</pre>
+
+<p>Note that a list item is not collapsible if it has no nested list as child element.</p>
+
+<!--h3--></div>
+
+<h3 cbc>Controller Default State</h3><div>
+
+<p>By default, controllers are in the state "expanded". But the nearest parent element with a <tt>cbc-default="collapsed"</tt> attribute will override that:</p>
+
+<figcaption class="listing">A collapsible tree with undordered lists</figcaption>
+<pre>
+&lt;ul&gt;
+&lt;li&gt;list item&lt;/li&gt;
+&lt;li cbc <hi>cbc-default</hi>="<hi>collapsed</hi>"&gt;list item
+	&lt;ul&gt;
+	&lt;li&gt;list item&lt;/li&gt;
+	&lt;li <hi>cbc</hi>&gt;list item collapsed by default
+		&lt;ul&gt;
+		&lt;li&gt;list item&lt;/li&gt;
+		&lt;li&gt;list item&lt;/li&gt;
+		&lt;li&gt;list item&lt;/li&gt;
+		&lt;/ul&gt;&lt;/li&gt;
+	&lt;li&gt;list item&lt;/li&gt;
+	&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;list item&lt;/li&gt;
+&lt;/ul&gt;
+</pre>
+
+<p>Possible values for <tt>cbc-default</tt> are <tt>collapsed</tt> and <tt>expanded</tt>.</p>
+
+<!--h3--></div>
+
+<h3 cbc>Dynamic Vertical Spacing</h3><div>
+
+<p>A sequence of collapsed elements visually looks like a condensed plain list. To emphasize this impression and add more visual structure, the vertical distance between collapsed list items will shrink. When items are expanded, the distance between items above and below will grow somewhat.</p>
+
+<p>This effect is triggered by the attribute <tt>vertical-spacing="dynamic"</tt> on an arbitrary parent container element (<tt>body</tt> for example).</p>
+
+<!--h3--></div>
+
+<!--h2--></div>
 
 <h2 cbc>CSS and Controller Icons</h2><div>
 

@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/inc/js-collapse/js-collapse-0.css" />
+<script type="module" src="/inc/js-collapse/js-collapse-0.js" ></script>
+<style>
+body { margin-left : 40px }
+</style>
+<title>Web Toolbox > JS-Collapse > Collapsible Chapters</title>
+
+</head><body>
+
+<h1>Collapsible Heterogeneous Lists</h1>
+
+<p>This is a text</p>
+
+<p>List 1 Unordered nested lists</p>
+
+<ul class="collapsible" vertical-spacing="">
+<li>Non-collapsible item</li>
+<li cbc>Collapsible ordered list
+	<ul>
+	<li>list item</li>
+	<li cbc>Collapsible ordered list
+		<ul>
+		<li>list item</li>
+		</ul></li>
+	</ul></li>
+<li cbc>Collapsible ordered list
+	<ul>
+	<li cbc>Collapsible item
+		<ul>
+		<li>Non-collapsible item</li>
+		<li cbc>Collapsible Ordered List
+			<ul>
+			<li>List Item</li>
+			<li>List Item</li>
+			<li>List Item</li>
+			</ul></li>
+		<li>Non-collapsible item</li>
+		</ul></li>
+	</ul></li>
+</ul>
+
+<p>List 2 Ordered Nested Lists</p>
+
+<ol class="collapsible" vertical-spacing="">
+<li>Non-collapsible item</li>
+<li cbc>Collapsible ordered list
+	<ol>
+	<li cbc>Collapsible item
+		<ol>
+		<li>Non-collapsible item</li>
+		<li cbc>Collapsible Ordered List
+			<ol>
+			<li>List Item</li>
+			<li>List Item</li>
+			<li>List Item</li>
+			</ol></li>
+		<li>Non-collapsible item</li>
+		</ol></li>
+	</ol></li>
+<li cbc>Collapsible item
+	<ol>
+	<li>Non-collapsible item</li>
+	<li cbc>Collapsible item
+		<ol>
+		<li>Non-collapsible item</li>
+		<li>Non-collapsible item</li>
+		<li>Non-collapsible item</li>
+		</ol></li>
+	</ol></li>
+<li>Non-collapsible item</li>
+</ol>
+
+<p>List 3 Heterogeneous nested lists</p>
+
+<ul class="collapsible">
+<li>list item</li>
+<li cbc>list item
+	<ul>
+	<li>list item</li>
+	<li cbc>unordered list
+		<ul>
+		<li>list item</li>
+		</ul></li>
+	<li cbc>ordered list
+		<ol>
+		<li>list item</li>
+		<li cbc>unordered list
+			<ol>
+			<li>list item</li>
+			<li>list item</li>
+			</ol></li>
+		</ol></li>	
+</ul></li>
+	<li cbc>ordered list
+		<ol>
+		<li>list item</li>
+		<li>list item</li>
+			<li cbc>ordered list
+				<ul>
+				<li>list item</li>
+				<li>list item</li>
+				</ul></li>
+		</ol></li>
+<li>list item</li>
+</ul>
+
+<h2>Findings</h2><div>
+
+<ol>
+<li>The <tt>padding-left</tt> CSS property on a nested list element determines the indentation of <tt>LI</tt> child elements.</li>
+<li>The <tt>li[cbc]::before</tt> element shows the controller icon as background image. To align the image with the left border of the list item container, they must have a negative <tt>margin-left</tt> that matches the <tt>padding-left</tt> value on the parent list element.</li>
+<li>The <tt>width</tt> of the <tt>li::before</tt> element then determines the indentation of the first text node in the <tt>li</tt>.</li>
+<li>An ordered list <tt>OL</tt> needs a larger <tt>padding-left</tt> value to get space for both the controller icon and the list item number. The padding can <em>not</em> be reduced because the list item number is left-aligned with the left border of the list items. A too small value causes the number to overlap the controller icon.</li>
+
+<li>- - - -</li>
+
+<li>The <tt>width</tt> of the <tt>::before</tt> element shifts the text content of <tt>LI</tt> elements to the right. This is compensated by shifting the <tt>LI::before</tt> to the left by a negative <tt>margin-left</tt> value of the same amount.</li>
+<li>The value of <tt>margin-left</tt> of <tt>::before</tt> shall not exceed <tt>padding-left</tt> of the parent list <tt>UL</tt> or <tt>OL</tt>, otherwise the icons are (partially) clipped in the expanding and collapsing states.</li>
+<li>Ordered lists (<tt>OL</tt>) item have an additional <tt>LI::marker</tt> pseudo element to hold the item number, which precedes the <tt>::before</tt> element in the chain of siblings. Position, size, padding and margin cannot be controlled with CSS.</li>
+<li>Therefore, the <tt>::before</tt> element must be made wide enough to contain both the controller icon <em>and</em> the item number, and be shifted left with a larger negative left margin value. </li>
+<li>Because OL list items have wider <tt>::before</tt> elements, the <tt>padding-left</tt> value may have to be increased accordingly.</li>
+<li>If an ordered list item contains an unordered list, the <tt>OL > LI > UL > LI</tt> items may appear to be indented too far right. This can be compensated with a negative <tt>margin-left</tt> on the <tt>OL > LI > UL</tt> element.</li>
+<li>Similarly, if an <tt>UL > LI</tt> contains an <tt>UL > LI > OL > LI</tt>, the indentation of the <tt>OL</tt> may not be enough to recognize it as a subordinate list. In this case, the <tt>margin-left</tt> of the <tt>UL > LI > OL</tt> can be increased to shift the subordinate list more to the right.<li>
+</ol>
+
+<p>If we shift the <tt>li::before</tt> further to the left with a larger negative <tt>margin-left</tt>, the controller icon will no longer be aligned with the parent list icons. So the parent list has to be configured 
+
+<pre>
+ul:has(>li[cbc]) { 
+	padding-left : 25px ;
+	}
+ul > li[cbc]::before { 
+	margin-left : -25px ;
+	width : 25px ;
+	}
+ol:has(>li[cbc]) { 
+	padding-left : 45px ;
+	}
+ol > li[cbc]::before { 
+	margin-left : -45px ;
+	width : 45px ;
+	}
+</pre>
+
+</div>
+
+</body></html>
